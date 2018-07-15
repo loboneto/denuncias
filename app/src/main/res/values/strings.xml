@@ -3,4 +3,17 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <string name="name">Nome</string>
+    <string name="email">Email</string>
+    <string name="pass">Senha</string>
+    <string name="confirmPass">Confirmar senha</string>
+    <string name="signUp">Cadastrar</string>
+    <string name="register">Não possui conta? Crie uma</string>
+    <string name="login">Login</string>
+
+    <!--Create-->
+    <string name="title">Título</string>
+    <string name="description">Descrição</string>
+    <string name="photoContent">Foto para publicação da denúncia</string>
 </resources>

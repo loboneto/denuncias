@@ -2,7 +2,6 @@ package neto.lobo.denuncias.views.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
 import neto.lobo.denuncias.R;
 
 public class CreateActivity extends AppCompatActivity {
