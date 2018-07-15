@@ -32,8 +32,9 @@
         </activity>
         <activity android:name=".views.activities.RegisterActivity" />
         <activity android:name=".views.activities.EditProfileActivity" />
-        <activity android:name=".views.activities.HomeActivity" />
-        <activity android:name=".views.activities.CreateActivity"></activity>
+        <activity android:name=".views.activities.HomeActivity"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".views.activities.CreateActivity"/>
     </application>
 
 </manifest>

@@ -47,8 +47,8 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_add:
 //                    toolbar.setTitle("Criar");
-                    fragment = new CreateFragment();
-                    loadFragment(fragment);
+//                    fragment = new CreateFragment();
+//                    loadFragment(fragment);
                     return true;
 
                 case R.id.navigation_notifications:
