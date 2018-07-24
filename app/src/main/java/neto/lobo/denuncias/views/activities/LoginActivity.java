@@ -2,6 +2,8 @@ package neto.lobo.denuncias.views.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +11,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.provider.SyncStateContract;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,13 +19,25 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.invoke.ConstantCallSite;
 import java.util.ArrayList;
 import java.util.List;
 
 import neto.lobo.denuncias.R;
+import neto.lobo.denuncias.common.Common;
+import neto.lobo.denuncias.constants.ConstAndroid;
+import neto.lobo.denuncias.managers.ManagerContexto;
+import neto.lobo.denuncias.managers.ManagerPreferences;
+import neto.lobo.denuncias.managers.ManagerRest;
+import youubi.client.help.sqlite.DataBaseLocal;
+import youubi.common.constants.ConstModel;
+import youubi.common.constants.ConstResult;
+import youubi.common.to.PersonTO;
+import youubi.common.to.ResultTO;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -42,12 +57,42 @@ public class LoginActivity extends AppCompatActivity {
 //        checkPermissions();
     }
 
+
     public void signUp(View view) {
         startActivity(new Intent(this, RegisterActivity.class));
     }
 
     public void signIn(View view) {
-        startActivity(new Intent(this, HomeActivity.class));
+        Button signIn = findViewById(R.id.buttonSignIn);
+        signIn.setEnabled(false);
+        EditText email = findViewById(R.id.email);
+        EditText senha = findViewById(R.id.senha);
+
+        ManagerRest rest = new ManagerRest(LoginActivity.this);
+        ResultTO result  = rest.login(email.getText().toString(), senha.getText().toString());
+
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Carregando...");
+        progressDialog.show();
+
+
+        if(result.getCode() == ConstResult.CODE_OK){
+            Intent home = new Intent(this, HomeActivity.class);
+            ManagerPreferences preferences =  new ManagerPreferences(this);
+            preferences.setEmail(email.getText().toString());
+            preferences.setTokenAPI(((PersonTO)result.getObject()).getToken());
+            preferences.setNameFirst(((PersonTO)result.getObject()).getNameFirst());
+            startActivity(home);
+            startActivity(home);
+            finish();
+        }else{
+            Toast.makeText(LoginActivity.this, result.getDescription(), Toast.LENGTH_LONG).show();
+            signIn.setEnabled(true);
+            progressDialog.cancel();
+        }
+
     }
 
     private void checkPermissions() {

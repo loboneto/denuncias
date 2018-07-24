@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import neto.lobo.denuncias.R;
+import neto.lobo.denuncias.managers.ManagerPreferences;
 
 public class ProfileFragment extends Fragment {
 
@@ -18,6 +20,11 @@ public class ProfileFragment extends Fragment {
 
         final View view = inflater.inflate(R.layout.fragment_profile, containerTrending, false);
 
+        TextView name = view.findViewById(R.id.textName);
+        TextView email = view.findViewById(R.id.textEmail);
+        ManagerPreferences preferences = new ManagerPreferences(getContext());
+        name.setText(preferences.getNameFirst());
+        email.setText(preferences.getEmail());
         return view;
     }
 
