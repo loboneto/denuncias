@@ -20,4 +20,8 @@ public class CreateFragment extends Fragment {
         return view;
     }
 
+    public void createContent(View view){
+
+    }
+
 }

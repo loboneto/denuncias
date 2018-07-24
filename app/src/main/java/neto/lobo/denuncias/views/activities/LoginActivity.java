@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
             preferences.setEmail(email.getText().toString());
             preferences.setTokenAPI(((PersonTO)result.getObject()).getToken());
             preferences.setNameFirst(((PersonTO)result.getObject()).getNameFirst());
+            preferences.setId(((PersonTO)result.getObject()).getId());
             startActivity(home);
             startActivity(home);
             finish();
