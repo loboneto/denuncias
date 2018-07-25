@@ -107,26 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
         }
 
-        /*mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        Log.d("---->", location.toString());
-                        Toast.makeText(getContext(), "localização chegou = ", Toast.LENGTH_SHORT);
-                        if (location != null) {
-                            // Logic to handle location object
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Task failed with an exception
-                        Toast.makeText(getContext(), "meeeeerda ", Toast.LENGTH_SHORT);
-                    }
-                });*/
 
-        //heckGPS();
 
         try {
             googleMap.setMyLocationEnabled(true);
