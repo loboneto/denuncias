@@ -29,6 +29,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
     //Mapa
     implementation 'com.google.maps.android:android-maps-utils:0.5'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
