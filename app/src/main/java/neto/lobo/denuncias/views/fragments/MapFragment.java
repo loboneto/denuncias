@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,14 +48,13 @@ import youubi.common.to.ContextoTO;
 import youubi.common.to.CoordTO;
 import youubi.common.to.ResultTO;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
     protected View mView;
     private Context mContext;
     public List<ContentTO> list;
     private FusedLocationProviderClient mFusedLocationClient;
-
 
     @Override
     public void onAttach(Context context) {
@@ -83,13 +83,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-5.203776755879636, -37.3215426877141), 10));
 
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            mMap.setMyLocationEnabled(false);
-        }
+       googleMap.setOnMarkerClickListener(this);
 
         ManagerRest rest = new ManagerRest(getContext());
 
+        // passar minha localização
         ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
 
         if(result.getCode() == ConstResult.CODE_OK){
@@ -134,4 +132,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return R.layout.fragment_map;
     }
 
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        //oast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_LONG).show();
+        AlertDialog dialog = onCreateDialog(null);
+        dialog.show();
+        return true;
+    }
+
+    public AlertDialog onCreateDialog(ContentTO cont) {
+        // Use the Builder class for convenient dialog construction
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(getActivity().getLayoutInflater().inflate(R.layout.fragment_teste, null))
+                .setPositiveButton(R.string.back_dialog, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // FIRE ZE MISSILES!
+                    }
+                })
+                .setNegativeButton(R.string.go_dialog, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        // Create the AlertDialog object and return it
+         return builder.create();
+    }
 }

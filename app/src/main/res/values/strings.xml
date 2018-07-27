@@ -4,4 +4,9 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="loren">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec convallis ante a ex condimentum, non placerat ex tempor.</string>
+    <string name="back_dialog">voltar</string>
+    <string name="go_dialog">ver</string>
 </resources>
