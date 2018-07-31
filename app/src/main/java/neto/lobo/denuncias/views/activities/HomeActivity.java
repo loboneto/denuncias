@@ -18,13 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import neto.lobo.denuncias.views.fragments.CreateFragment;
+//import neto.lobo.denuncias.views.fragments.CreateFragment;
 import neto.lobo.denuncias.views.fragments.MapFragment;
 import neto.lobo.denuncias.views.fragments.NotificationsFragment;
 import neto.lobo.denuncias.views.fragments.ProfileFragment;
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.views.fragments.SearchFragment;
 import neto.lobo.denuncias.helper.BottomNavigationViewHelper;
+import youubi.common.to.ContentTO;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -52,8 +53,8 @@ public class HomeActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_add:
 //                    toolbar.setTitle("Criar");
-                    fragment = new CreateFragment();
-                    loadFragment(fragment);
+                    //fragment = new CreateFragment();
+                    //loadFragment(fragment);
                     return true;
 
                 case R.id.navigation_notifications:

@@ -1,28 +1,17 @@
 package neto.lobo.denuncias.views.fragments;
 
-import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,19 +21,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerContexto;
 import neto.lobo.denuncias.managers.ManagerRest;
-import youubi.common.constants.ConstModel;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.ContentTO;
-import youubi.common.to.ContextoTO;
 import youubi.common.to.CoordTO;
 import youubi.common.to.ResultTO;
 
@@ -97,7 +81,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             for(int i = 0; i < list.size(); i++){
                 mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(list.get(i).getCoordTO().getLatitude(), list.get(i).getCoordTO().getLongitude()))
-                        .title(list.get(i).getTitle())
+                        .title("" + list.get(i).getId())
                         .snippet(list.get(i).getPersonTO().getNameFirst())
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
             }
@@ -138,29 +122,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public boolean onMarkerClick(Marker marker) {
-        //oast.makeText(getContext(), marker.getTitle(), Toast.LENGTH_LONG).show();
-        AlertDialog dialog = onCreateDialog(null);
-        dialog.show();
-        return true;
-    }
 
-    public AlertDialog onCreateDialog(ContentTO cont) {
-        // Use the Builder class for convenient dialog construction
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(getActivity().getLayoutInflater().inflate(R.layout.fragment_teste, null))
-                .setPositiveButton(R.string.back_dialog, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // FIRE ZE MISSILES!
-                    }
-                })
-                .setNegativeButton(R.string.go_dialog, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                    }
-                });
-        // Create the AlertDialog object and return it
-         return builder.create();
+        ContentTO content = null;
+
+        for (int i = 0; i< list.size(); i++){
+            if(marker.getTitle().equals(""+list.get(i).getId())){
+                content = list.get(i);
+            }
+        }
+
+        if(content != null){
+            //Abrir conteúdo
+            DenunciaDialogFragment cmd = new DenunciaDialogFragment();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("content",content);
+            cmd.setArguments(bundle);
+            cmd.setFragmentManager(getActivity().getFragmentManager());
+            cmd.show(getActivity().getSupportFragmentManager(),"contentDialog");
+        }else
+            Toast.makeText(getContext(), "Erro ao carregar conteudo!", Toast.LENGTH_LONG).show();
+
+        return true;
     }
 }

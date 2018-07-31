@@ -4,9 +4,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 
 import neto.lobo.denuncias.views.activities.LoginActivity;
+import youubi.common.to.ContentTO;
 
 public class Common {
 
+    public static ContentTO contentSelected;
 
 
     public void loading(boolean input, Context context){
