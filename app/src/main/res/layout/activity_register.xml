@@ -71,10 +71,10 @@
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/email"
-            android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/email" />
+            android:hint="@string/email"
+            android:inputType="textEmailAddress" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -94,10 +94,10 @@
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/senha"
-            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/pass" />
+            android:hint="@string/pass"
+            android:inputType="textPassword" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -119,14 +119,14 @@
             android:id="@+id/senha2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/confirmPass" />
-            android:hint="Confirmar senha"
-            android:inputType="textPassword"/>
+            android:hint="@string/confirmPass"
+            android:inputType="textPassword" />
 
     </android.support.design.widget.TextInputLayout>
 
     <Button
         android:id="@+id/buttonBack"
+        style="@style/ButtonText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -136,28 +136,26 @@
         android:layout_marginTop="8dp"
         android:onClick="returnLogin"
         android:text="Voltar"
-        android:background="@color/transparent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout5" />
 
     <Button
         android:id="@+id/button"
+        style="@style/ButtonPrimary"
+        app:layout_constraintHorizontal_weight="2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/colorPrimary"
-        android:text="@string/signUp"
-        android:backgroundTint="@color/colorPrimary"
         android:onClick="register"
-        android:text="Cadastrar"
-        android:textColor="#FFFFFF"
+        android:text="@string/signUp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/buttonBack"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout5" />
 
 

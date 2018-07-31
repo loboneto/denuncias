@@ -1,5 +1,6 @@
 package neto.lobo.denuncias.views.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +20,11 @@ import neto.lobo.denuncias.views.fragments.SearchFragment;
 import neto.lobo.denuncias.helper.BottomNavigationViewHelper;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private String[] permissions = new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
