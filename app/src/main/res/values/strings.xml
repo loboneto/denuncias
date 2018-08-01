@@ -14,6 +14,7 @@
     <string name="pass">Senha</string>
     <string name="confirmPass">Confirmar senha</string>
     <string name="signUp">Registrar</string>
+    <string name="denucniar">Denunciar</string>
     <string name="register">Não possui conta? Crie uma</string>
     <string name="login">Login</string>
 
@@ -21,4 +22,14 @@
     <string name="title">Título</string>
     <string name="description">Descrição</string>
     <string name="photoContent">Foto para publicação da denúncia</string>
+    <string-array name="categories">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
 </resources>

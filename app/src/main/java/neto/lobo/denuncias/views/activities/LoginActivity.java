@@ -45,6 +45,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        ManagerPreferences managerPreferences = new ManagerPreferences(this);
+        if(managerPreferences.getEmail() != null && managerPreferences.getPassPlain() !=  null){
+            EditText email = findViewById(R.id.email);
+            EditText senha = findViewById(R.id.senha);
+
+            email.setText(managerPreferences.getEmail());
+            senha.setText(managerPreferences.getPassPlain());
+        }
+
     }
 
 
@@ -70,11 +79,12 @@ public class LoginActivity extends AppCompatActivity {
 
         if(result.getCode() == ConstResult.CODE_OK){
             Intent home = new Intent(this, HomeActivity.class);
-            ManagerPreferences preferences =  new ManagerPreferences(this);
-            preferences.setEmail(email.getText().toString());
-            preferences.setTokenAPI(((PersonTO)result.getObject()).getToken());
-            preferences.setNameFirst(((PersonTO)result.getObject()).getNameFirst());
-            preferences.setId(((PersonTO)result.getObject()).getId());
+            ManagerPreferences pref =  new ManagerPreferences(this);
+            pref.loginSession(((PersonTO)result.getObject()).getId(), ((PersonTO)result.getObject()).getEmail(),
+                    ((PersonTO)result.getObject()).getPassPlain(),
+                    ((PersonTO)result.getObject()).getNameFirst(),
+                    ((PersonTO)result.getObject()).getNameLast(),
+                    false, false, ((PersonTO)result.getObject()).getToken());
             startActivity(home);
             startActivity(home);
             finish();

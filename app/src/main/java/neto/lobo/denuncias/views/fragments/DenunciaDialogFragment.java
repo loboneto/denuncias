@@ -3,6 +3,7 @@ package neto.lobo.denuncias.views.fragments;
 import android.app.Dialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import neto.lobo.denuncias.R;
+import neto.lobo.denuncias.views.activities.DenunciaActivity;
 import youubi.common.to.ContentTO;
 
 public class DenunciaDialogFragment extends DialogFragment {
@@ -30,14 +32,18 @@ public class DenunciaDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.fragment_teste,null);
+        View view = inflater.inflate(R.layout.fragment_denuncia_dialog,null);
         builder.setView(view)
-                .setPositiveButton(R.string.back_dialog, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.go_dialog, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // FIRE ZE MISSILES!
+                         Intent intent = new Intent(getContext(), DenunciaActivity.class);
+                         Bundle bun = new Bundle();
+                         bun.putSerializable("content", content);
+                         intent.putExtra("content",bun);
+                         getActivity().startActivity(intent);
                     }
                 })
-                .setNegativeButton(R.string.go_dialog, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.back_dialog, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog
                     }

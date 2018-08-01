@@ -88,12 +88,12 @@ public class RegisterActivity extends AppCompatActivity {
             Log.d("Create Person: ", result.toString());
 
             if(result.getCode() == ConstResult.CODE_OK){
-                PersonTO newUser = (PersonTO) result.getObject();
                 ManagerPreferences pref = new ManagerPreferences(this);
-                pref.setId(newUser.getId());
-                pref.setTokenAPI(newUser.getToken());
-                pref.setEmail(newUser.getEmail());
-                pref.setNameFirst(newUser.getNameFirst());
+                pref.loginSession(((PersonTO)result.getObject()).getId(), ((PersonTO)result.getObject()).getEmail(),
+                        ((PersonTO)result.getObject()).getPassPlain(),
+                        ((PersonTO)result.getObject()).getNameFirst(),
+                        ((PersonTO)result.getObject()).getNameLast(),
+                        false, false, ((PersonTO)result.getObject()).getToken());
                 Intent home = new Intent(this, HomeActivity.class);
                 progressDialog.cancel();
                 startActivity(home);
