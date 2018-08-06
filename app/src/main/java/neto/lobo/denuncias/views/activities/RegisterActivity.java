@@ -106,6 +106,11 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    public void selectAvatar(View view){
+        Intent intent = new Intent(this, ListAvatarActivity.class);
+        startActivity(intent);
+    }
+
     public void returnLogin(View view) {
         finish();
     }

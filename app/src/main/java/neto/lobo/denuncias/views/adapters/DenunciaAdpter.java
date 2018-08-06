@@ -39,7 +39,6 @@ public class DenunciaAdpter extends RecyclerView.Adapter<DenunciaAdpter.ViewHold
             ContentTO content = listDenuncia.get(position);
 
             holder.desc.setText(content.getDescription());
-            holder.personName.setText(content.getPersonTO().getNameFirst());
         }
 
 
@@ -60,7 +59,6 @@ public class DenunciaAdpter extends RecyclerView.Adapter<DenunciaAdpter.ViewHold
             super(itemView);
 
             this.desc = itemView.findViewById(R.id.textDescriptionDenunciaAdpter);
-            this.personName = itemView.findViewById(R.id.textNamePersonAdpter);
         }
     }
 }

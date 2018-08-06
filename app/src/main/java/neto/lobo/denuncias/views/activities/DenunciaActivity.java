@@ -1,5 +1,6 @@
 package neto.lobo.denuncias.views.activities;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,5 +52,13 @@ public class DenunciaActivity extends AppCompatActivity {
 
     public void back(View view){
         finish();
+    }
+
+    public void toProfile(View view){
+        Intent profile = new Intent(this, ProfileActivity.class);
+        Bundle bun =  new Bundle();
+        bun.putSerializable("person", content.getPersonTO());
+        profile.putExtra("person", bun);
+        startActivity(profile);
     }
 }

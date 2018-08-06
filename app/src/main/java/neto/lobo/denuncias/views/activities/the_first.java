@@ -24,6 +24,8 @@ public class the_first extends AppCompatActivity {
         ManagerPreferences pref =  new ManagerPreferences(this);
         ManagerRest rest = new ManagerRest(this);
 
+        //Toast.makeText(this, pref.getPassPlain(), Toast.LENGTH_LONG).show();
+
         if(pref.getEmail() != null && pref.getPassPlain() != null){
 
             ResultTO result  = rest.login(pref.getEmail(), pref.getPassPlain());
@@ -34,7 +36,7 @@ public class the_first extends AppCompatActivity {
                         ((PersonTO)result.getObject()).getPassPlain(),
                         ((PersonTO)result.getObject()).getNameFirst(),
                         ((PersonTO)result.getObject()).getNameLast(),
-                        false, false, ((PersonTO)result.getObject()).getToken());
+                        false, true, ((PersonTO)result.getObject()).getToken());
                /* preferences.setTokenAPI(((PersonTO)result.getObject()).getToken());
                 preferences.setNameFirst(((PersonTO)result.getObject()).getNameFirst());
                 preferences.setId(((PersonTO)result.getObject()).getId());*/

@@ -38,7 +38,9 @@
             android:name=".views.activities.HomeActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".views.activities.CreateActivity" />
-        <activity android:name=".views.activities.DenunciaActivity"></activity>
+        <activity android:name=".views.activities.DenunciaActivity" />
+        <activity android:name=".views.activities.ProfileActivity" />
+        <activity android:name=".views.activities.ListAvatarActivity"></activity>
     </application>
 
 </manifest>

@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                     ((PersonTO)result.getObject()).getPassPlain(),
                     ((PersonTO)result.getObject()).getNameFirst(),
                     ((PersonTO)result.getObject()).getNameLast(),
-                    false, false, ((PersonTO)result.getObject()).getToken());
+                    false, true, ((PersonTO)result.getObject()).getToken());
             startActivity(home);
             startActivity(home);
             finish();

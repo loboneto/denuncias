@@ -41,6 +41,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
+                android:onClick="toProfile"
                 android:src="@drawable/photo_person_default"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -57,6 +58,7 @@
                 android:layout_marginRight="16dp"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="8dp"
+                android:onClick="toProfile"
                 android:text="@string/name"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="18sp"
@@ -65,7 +67,8 @@
                 app:layout_constraintEnd_toStartOf="@+id/buttonEditProfile"
                 app:layout_constraintStart_toEndOf="@+id/photoProfile"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.01999998" />
+                app:layout_constraintVertical_bias="0.01999998"
+                tools:onClick="toProfile" />
 
             <ImageView
                 android:id="@+id/imageView5"
