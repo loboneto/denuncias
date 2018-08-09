@@ -3,6 +3,7 @@ package neto.lobo.denuncias.views.fragments;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -27,12 +28,16 @@ import java.util.List;
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerContexto;
 import neto.lobo.denuncias.managers.ManagerRest;
+import youubi.client.help.sqlite.DataBaseLocal;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.ContentTO;
 import youubi.common.to.CoordTO;
 import youubi.common.to.ResultTO;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
+
+    private DataBaseLocal dataBaseLocal;
+    private ManagerRest rest;
 
     private GoogleMap mMap;
     protected View mView;
@@ -52,6 +57,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         mView = inflater.inflate(getLayoutId(), container, false);
 
+        dataBaseLocal = DataBaseLocal.getInstance(getActivity());
+        rest = new ManagerRest(getContext());
 
         setMap();
         return mView;
@@ -60,6 +67,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         UiSettings settings = mMap.getUiSettings();
@@ -67,34 +75,70 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-5.203776755879636, -37.3215426877141), 10));
 
-       googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMarkerClickListener(this);
 
-        ManagerRest rest = new ManagerRest(getContext());
+        new Thread(){
+            @Override
+            public void run () {
+                Looper.prepare();
+
+                ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
+
+                if(result.getCode() == ConstResult.CODE_OK){
+
+                    list = result.getListObjectCast();
+                    dataBaseLocal.storeListContent(list);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            for(ContentTO contentTO : list){
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(contentTO.getCoordTO().getLatitude(), contentTO.getCoordTO().getLongitude()))
+                                        .title("" + contentTO.getId())
+                                        .snippet(contentTO.getPersonTO().getNameFirst())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
+                            }
+
+                        }
+                    });
+
+
+                }   else{
+                    Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
+                }
+
+            }
+        }.start();
+
 
         // passar minha localização
-        ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
-
-        if(result.getCode() == ConstResult.CODE_OK){
-            list = result.getListObjectCast();
-            Log.d("contentx: ", " " + list.size());
-
-            for(int i = 0; i < list.size(); i++){
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(list.get(i).getCoordTO().getLatitude(), list.get(i).getCoordTO().getLongitude()))
-                        .title("" + list.get(i).getId())
-                        .snippet(list.get(i).getPersonTO().getNameFirst())
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
-            }
-        }else{
-            Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
-        }
+//        ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
+//
+//        if(result.getCode() == ConstResult.CODE_OK){
+//
+//            list = result.getListObjectCast();
+//            dataBaseLocal.storeListContent(list);
+//
+//            for(int i = 0; i < list.size(); i++){
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(list.get(i).getCoordTO().getLatitude(), list.get(i).getCoordTO().getLongitude()))
+//                        .title("" + list.get(i).getId())
+//                        .snippet(list.get(i).getPersonTO().getNameFirst())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
+//            }
+//        }else{
+//            Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
+//        }
 
 
 
         try {
+
             googleMap.setMyLocationEnabled(true);
-        }
-        catch (SecurityException e) {
+
+        } catch (SecurityException e) {
             Log.d("Itagores", "onMapReady: sem permissao de GPS");
             ManagerContexto contextoProvider = new ManagerContexto(getContext());
 
@@ -138,7 +182,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             //Abrir conteúdo
             DenunciaDialogFragment cmd = new DenunciaDialogFragment();
             Bundle bundle = new Bundle();
-            bundle.putSerializable("content",content);
+
+            bundle.putLong("contentId", content.getId());
+
+            //bundle.putSerializable("content",content);
             cmd.setArguments(bundle);
             cmd.setFragmentManager(getActivity().getFragmentManager());
             cmd.show(getActivity().getSupportFragmentManager(),"contentDialog");

@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Looper;
 import android.provider.Settings;
 import android.provider.SyncStateContract;
 import android.support.v4.app.ActivityCompat;
@@ -40,15 +41,27 @@ import youubi.common.to.ResultTO;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private ManagerRest rest;
+    private DataBaseLocal dataBaseLocal;
+
+    private Button signIn;
+    private EditText email;
+    private EditText senha;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        rest = new ManagerRest(LoginActivity.this);
+        dataBaseLocal = DataBaseLocal.getInstance(this);
+
+        signIn = findViewById(R.id.buttonSignIn);
+        email = findViewById(R.id.email);
+        senha = findViewById(R.id.senha);
+
         ManagerPreferences managerPreferences = new ManagerPreferences(this);
         if(managerPreferences.getEmail() != null && managerPreferences.getPassPlain() !=  null){
-            EditText email = findViewById(R.id.email);
-            EditText senha = findViewById(R.id.senha);
 
             email.setText(managerPreferences.getEmail());
             senha.setText(managerPreferences.getPassPlain());
@@ -62,13 +75,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void signIn(View view) {
-        Button signIn = findViewById(R.id.buttonSignIn);
-        signIn.setEnabled(false);
-        EditText email = findViewById(R.id.email);
-        EditText senha = findViewById(R.id.senha);
 
-        ManagerRest rest = new ManagerRest(LoginActivity.this);
-        ResultTO result  = rest.login(email.getText().toString(), senha.getText().toString());
+        signIn.setEnabled(false);
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setIndeterminate(true);
@@ -76,23 +84,53 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Carregando...");
         progressDialog.show();
 
+        final String emailStr = email.getText().toString();
+        final String passStr = senha.getText().toString();
 
-        if(result.getCode() == ConstResult.CODE_OK){
-            Intent home = new Intent(this, HomeActivity.class);
-            ManagerPreferences pref =  new ManagerPreferences(this);
-            pref.loginSession(((PersonTO)result.getObject()).getId(), ((PersonTO)result.getObject()).getEmail(),
-                    ((PersonTO)result.getObject()).getPassPlain(),
-                    ((PersonTO)result.getObject()).getNameFirst(),
-                    ((PersonTO)result.getObject()).getNameLast(),
-                    false, true, ((PersonTO)result.getObject()).getToken());
-            startActivity(home);
-            startActivity(home);
-            finish();
-        }else{
-            Toast.makeText(LoginActivity.this, result.getDescription(), Toast.LENGTH_LONG).show();
-            signIn.setEnabled(true);
-            progressDialog.cancel();
-        }
+        new Thread(){
+            @Override
+            public void run () {
+                Looper.prepare();
+
+                final ResultTO result  = rest.login(emailStr, passStr);
+
+                if(result.getCode() == ConstResult.CODE_OK){
+
+                    PersonTO personTO = (PersonTO) result.getObject();
+                    dataBaseLocal.storePerson(personTO, personTO.getId());
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            progressDialog.cancel();
+                            Intent home = new Intent(LoginActivity.this, HomeActivity.class);
+                            startActivity(home);
+                            finish();
+
+                        }
+                    });
+
+
+                }else{
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            Toast.makeText(LoginActivity.this, result.getDescription(), Toast.LENGTH_LONG).show();
+                            signIn.setEnabled(true);
+                            progressDialog.cancel();
+
+                        }
+                    });
+
+                }
+
+
+            }
+        }.start();
+
 
     }
 
