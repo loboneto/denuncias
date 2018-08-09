@@ -20,6 +20,8 @@ import java.util.List;
 
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerRest;
+import youubi.common.constants.ConstModel;
+import youubi.common.constants.ConstNotify;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.NotificationTO;
 import youubi.common.to.ResultTO;
@@ -43,14 +45,24 @@ public class NotificationsFragment extends Fragment {
 
         result = rest.getListNotification(50,1);
 
+
+
         if(result.getCode() == ConstResult.CODE_OK){
             notifs = result.getListObjectCast();
 
+            //filtrar aqui
+            for(int i = 0; i<notifs.size(); i++){
+                if(notifs.get(i).getType() != ConstNotify.NOTIFY_TYPE_EXP_CONTENT_COMMENTED ||
+                        notifs.get(i).getType() != ConstNotify.NOTIFY_TYPE_EXP_CONTENT_RATED)
+                    notifs.remove(i);
+                }
+
             String[] strings = new String[notifs.size()];
-
-
            for(int i = 0; i<notifs.size(); i++){
-                strings[i] = notifs.get(i).getText();
+               if(notifs.get(i).getType() == ConstNotify.NOTIFY_TYPE_EXP_CONTENT_COMMENTED)
+                    strings[i] = notifs.get(i).getElementPersonName() + " comentou sua publicação " + notifs.get(i).getElementName();
+               else
+                    strings[i] = notifs.get(i).getElementPersonName() + " apoiou sua publicação " + notifs.get(i).getElementName();
             }
 
 

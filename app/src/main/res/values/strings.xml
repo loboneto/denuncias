@@ -24,15 +24,15 @@
     <string name="description">Descrição</string>
     <string name="photoContent">Foto para publicação da denúncia</string>
     <string-array name="categories">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
+        <item>Iluminação</item>
+        <item>Lixo</item>
+        <item>Ruas e Calçadas</item>
+        <item>Espaços Públicos</item>
+        <item>Transporte Público</item>
     </string-array>
-
-
+    <string name="iluminação">Iluminação</string>
+    <string name="lixo">Lixo</string>
+    <string name="ruas_e_Calçadas">Ruas e Calçadas</string>
+    <string name="espacos_publicos">Espaços Públicos</string>
+    <string name="transporte_publico">Transporte Público</string>
 </resources>
