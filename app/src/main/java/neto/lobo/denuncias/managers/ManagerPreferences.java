@@ -2,6 +2,7 @@ package neto.lobo.denuncias.managers;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 
 
 public class ManagerPreferences {

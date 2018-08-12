@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,7 +43,7 @@ public class DenunciaActivity extends AppCompatActivity {
     private TextView commentsEmpty;
     private TextView data;
     private ImageView imgVDenuncia;
-    private TextInputEditText textComment;
+    private EditText textComment;
 
 
     private RecyclerView recyclerView;

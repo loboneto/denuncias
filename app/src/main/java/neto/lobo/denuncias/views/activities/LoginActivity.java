@@ -10,16 +10,22 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.provider.SyncStateContract;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,15 +49,22 @@ public class LoginActivity extends AppCompatActivity {
 
     private ManagerRest rest;
     private DataBaseLocal dataBaseLocal;
+    private ManagerPreferences managerPreferences;
 
     private Button signIn;
     private EditText email;
     private EditText senha;
 
+    private RelativeLayout relativeLogin;
+    private ConstraintLayout constraintTopLogin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        relativeLogin = findViewById(R.id.relativeLogin);
+        constraintTopLogin = findViewById(R.id.constraintTopLogin);
 
         rest = new ManagerRest(LoginActivity.this);
         dataBaseLocal = DataBaseLocal.getInstance(this);
@@ -60,14 +73,34 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         senha = findViewById(R.id.senha);
 
-        ManagerPreferences managerPreferences = new ManagerPreferences(this);
-        if(managerPreferences.getEmail() != null && managerPreferences.getPassPlain() !=  null){
 
-            email.setText(managerPreferences.getEmail());
-            senha.setText(managerPreferences.getPassPlain());
-        }
+        managerPreferences = new ManagerPreferences(this);
+
+        email.setText(managerPreferences.getEmail());
+        senha.setText(managerPreferences.getPassPlain());
+
+        handler.postDelayed(runnable, 2000);
 
     }
+
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+
+            if(managerPreferences.getFlagLogin()){
+
+                Intent home = new Intent(LoginActivity.this, HomeActivity.class);
+                startActivity(home);
+                finish();
+
+            } else {
+                constraintTopLogin.setVisibility(View.GONE);
+                relativeLogin.setVisibility(View.VISIBLE);
+            }
+
+        }
+    };
 
 
     public void signUp(View view) {

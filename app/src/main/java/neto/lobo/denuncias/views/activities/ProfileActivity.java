@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.supercharge.shimmerlayout.ShimmerLayout;
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerRest;
 import neto.lobo.denuncias.views.adapters.DenunciaAdpter;
@@ -30,6 +31,7 @@ public class ProfileActivity extends AppCompatActivity {
     private CircleImageView photoProfile;
     private RecyclerView recyclerView;
     private DenunciaAdpter denunciaAdpter;
+    private ShimmerLayout shimmerLayout;
 
 
     private ManagerRest rest;
@@ -49,8 +51,13 @@ public class ProfileActivity extends AppCompatActivity {
         rest = new ManagerRest(this);
         dataBaseLocal = DataBaseLocal.getInstance(this);
 
+        shimmerLayout = findViewById(R.id.shimmerLayout);
+        shimmerLayout.startShimmerAnimation();
+
         name = findViewById(R.id.textNameProfile);
         photoProfile = findViewById(R.id.photoProfile);
+
+
 
         idPerson = getIntent().getExtras().getLong("personId");
 
@@ -59,37 +66,13 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         recyclerView = findViewById(R.id.recyclerViewProfileActivity);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         denunciaAdpter = new DenunciaAdpter(contents);
         recyclerView.setAdapter(denunciaAdpter);
 
         loadProfile();
 
-//        if(getIntent().getBundleExtra("person") != null){
-//            person = (PersonTO) getIntent().getBundleExtra("person").getSerializable("person");
-//            name.setText(person.getNameFirst());
-//
-//
-//            result = rest.getListContent(person.getId());
-//
-//            if(result == null){
-//                Toast.makeText(this, "ResultTO null", Toast.LENGTH_LONG).show();
-//                finish();
-//            }
-//
-//            if(result.getCode() == ConstResult.CODE_OK){
-//
-//                contents = result.getListObjectCast();
-//                denunciaAdpter.notifyDataSetChanged();
-//
-//            }else{
-//                Toast.makeText(this, "Erro ao carregar conteudos.", Toast.LENGTH_LONG).show();
-//            }
-//        }else{
-//            Toast.makeText(this, "Erro ao carregar perfil.", Toast.LENGTH_LONG).show();
-//            finish();
-//        }
     }
 
     public void loadProfile(){
@@ -163,7 +146,11 @@ public class ProfileActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+
                                 denunciaAdpter.notifyDataSetChanged();
+
+                                shimmerLayout.stopShimmerAnimation();
+                                shimmerLayout.setVisibility(View.GONE);
                             }
                         });
 
