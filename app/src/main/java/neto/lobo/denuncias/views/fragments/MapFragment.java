@@ -1,5 +1,6 @@
 package neto.lobo.denuncias.views.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import java.util.List;
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerContexto;
 import neto.lobo.denuncias.managers.ManagerRest;
+import neto.lobo.denuncias.views.activities.LoginActivity;
 import youubi.client.help.sqlite.DataBaseLocal;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.ContentTO;
@@ -69,13 +71,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
         UiSettings settings = mMap.getUiSettings();
         settings.setAllGesturesEnabled(true);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-5.203776755879636, -37.3215426877141), 10));
 
         googleMap.setOnMarkerClickListener(this);
+
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Carregando...");
+        progressDialog.show();
 
         new Thread(){
             @Override
@@ -100,6 +108,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                                         .snippet(contentTO.getPersonTO().getNameFirst())
                                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
                             }
+
+                            progressDialog.cancel();
 
                         }
                     });

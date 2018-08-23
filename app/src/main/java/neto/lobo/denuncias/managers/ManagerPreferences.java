@@ -13,6 +13,7 @@ public class ManagerPreferences {
     private final static String PASS_PLAIN  	= "pass_plain";		        // String (nao codificado)
     private final static String NAME_FIRST  	= "name_first";		        // String
     private final static String NAME_LAST   	= "name_last";		        // String
+    private final static String NAME_NICK   	= "name_nick";		        // String
     private final static String FLAG_LOGIN  	= "flag_login";			    // Boolean
     private final static String FLAG_SAVE_EMAIL = "flag_save_email";	    // Boolean
     private final static String FLAG_SAVE_PASS  = "flag_save_pass";		    // Boolean
@@ -119,9 +120,19 @@ public class ManagerPreferences {
         return sharedPreferences.getString(NAME_FIRST, "");
     }
 
+
     public void setNameFirst(String nameFirst) {
         editor.putString(NAME_FIRST, nameFirst);
         editor.commit();
+    }
+
+    public void setNameNick(String nameFirst) {
+        editor.putString(NAME_FIRST, nameFirst);
+        editor.commit();
+    }
+
+    public String getNameNick() {
+        return sharedPreferences.getString(NAME_NICK, "");
     }
 
 

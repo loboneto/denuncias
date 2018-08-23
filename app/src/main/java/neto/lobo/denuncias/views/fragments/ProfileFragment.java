@@ -19,6 +19,7 @@ import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerPreferences;
 import neto.lobo.denuncias.managers.ManagerRest;
 import neto.lobo.denuncias.views.activities.EditProfileActivity;
+import neto.lobo.denuncias.views.activities.LoginActivity;
 import neto.lobo.denuncias.views.adapters.DenunciaAdpter;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.ContentTO;
@@ -71,6 +72,21 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getContext(), EditProfileActivity.class));
+            }
+        });
+
+        Button logout = view.findViewById(R.id.buttonLogout);
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //startActivity(new Intent(getContext(), EditProfileActivity.class));
+                result = managerRest.logout();
+
+                if(result.getCode() == ConstResult.CODE_OK){
+                    startActivity(new Intent(getContext(), LoginActivity.class));
+                    getActivity().finish();
+                }
             }
         });
 

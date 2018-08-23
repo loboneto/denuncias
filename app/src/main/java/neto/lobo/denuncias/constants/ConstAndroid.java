@@ -8,9 +8,9 @@ public class ConstAndroid {
     //Host Oficial
     public final static String HOST = "edubi.ufersa.edu.br";                                  // YOUUBIDEPLOY : remoto
     public final static String PORT = "8080";							                        // YOUUBIDEPLOY
-    public final static String ROOT = "youubi2_gf_sut_d1";
-    public static final String VERSION_YOUUBI_PUB = "youubi2_gf_sut_d1 - 2018_07_06";	        // YOUUBIDEPLOY : versao + release de mesmo BD
-    public static final String VERSION_YOUUBI_PRI = "youubi2_gf_sut_d1";				        // YOUUBIDEPLOY : chave de cada instancia
+    public final static String ROOT = "youubi2_gf_sut_d2";
+    public static final String VERSION_YOUUBI_PUB = "youubi2_gf_sut_d2 - 2018_07_06";	        // YOUUBIDEPLOY : versao + release de mesmo BD
+    public static final String VERSION_YOUUBI_PRI = "youubi2_gf_sut_d2";				        // YOUUBIDEPLOY : chave de cada instancia
 
     // Host de release
 //    public final static String HOST = "edubi.ufersa.edu.br";                                // YOUUBIDEPLOY : remoto

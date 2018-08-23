@@ -3,6 +3,7 @@ package neto.lobo.denuncias.views.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +12,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.constants.ConstAndroid;
 import neto.lobo.denuncias.managers.ManagerPreferences;
 import neto.lobo.denuncias.managers.ManagerRest;
 import youubi.common.constants.ConstModel;
 import youubi.common.constants.ConstResult;
+import youubi.common.to.ContentTO;
 import youubi.common.to.ContextoTO;
 import youubi.common.to.CoordTO;
 import youubi.common.to.PersonTO;
@@ -35,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
     public void register(View view){
         EditText name = findViewById(R.id.name);
         EditText email = findViewById(R.id.email);
-        EditText senha = findViewById(R.id.senha);
+        final EditText senha = findViewById(R.id.senha);
         EditText senha2 = findViewById(R.id.senha2);
 
         if(name.getText().length() == 0){
@@ -50,10 +56,10 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(RegisterActivity.this, "As senhas não coincidem.", Toast.LENGTH_LONG).show();
         }else{
 
-            Button register = findViewById(R.id.button);
+            final Button register = findViewById(R.id.button);
             register.setEnabled(false);
 
-            PersonTO user = new PersonTO();
+            final PersonTO user = new PersonTO();
             user.setNameFirst(name.getText().toString());
             user.setEmail(email.getText().toString());
             user.setPassPlain(senha.getText().toString());
@@ -76,33 +82,45 @@ public class RegisterActivity extends AppCompatActivity {
             cont.setLatitude(0);
             cont.setLongitude(0);
 
-            ManagerRest rest = new ManagerRest(RegisterActivity.this);
-            ResultTO result = rest.createPerson("", 0, user, senha.getText().toString(), null, null);
-
-            final ProgressDialog progressDialog = new ProgressDialog(RegisterActivity.this);
+            final ManagerRest rest = new ManagerRest(RegisterActivity.this);
+            final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setIndeterminate(true);
             progressDialog.setCancelable(false);
             progressDialog.setMessage("Carregando...");
             progressDialog.show();
 
-            Log.d("Create Person: ", result.toString());
+            new Thread(){
+                @Override
+                public void run () {
+                    Looper.prepare();
 
-            if(result.getCode() == ConstResult.CODE_OK){
-                ManagerPreferences pref = new ManagerPreferences(this);
-                pref.loginSession(((PersonTO)result.getObject()).getId(), ((PersonTO)result.getObject()).getEmail(),
-                        ((PersonTO)result.getObject()).getPassPlain(),
-                        ((PersonTO)result.getObject()).getNameFirst(),
-                        ((PersonTO)result.getObject()).getNameLast(),
-                        false, false, ((PersonTO)result.getObject()).getToken());
-                Intent home = new Intent(this, HomeActivity.class);
-                progressDialog.cancel();
-                startActivity(home);
-                finish();
-            }else{
-                Toast.makeText(RegisterActivity.this, result.getDescription(), Toast.LENGTH_LONG).show();
-                register.setEnabled(true);
-                progressDialog.cancel();
-            }
+                    ResultTO result = rest.createPerson("", 0, user, senha.getText().toString(), null, null);
+
+
+
+                    Log.d("Create Person: ", result.toString());
+
+                    if(result.getCode() == ConstResult.CODE_OK){
+                        ManagerPreferences pref = new ManagerPreferences(getApplicationContext());
+                        pref.loginSession(((PersonTO)result.getObject()).getId(), ((PersonTO)result.getObject()).getEmail(),
+                                ((PersonTO)result.getObject()).getPassPlain(),
+                                ((PersonTO)result.getObject()).getNameFirst(),
+                                ((PersonTO)result.getObject()).getNameLast(),
+                                false, false, ((PersonTO)result.getObject()).getToken());
+                        Intent home = new Intent(getApplicationContext(), HomeActivity.class);
+                        progressDialog.cancel();
+                        startActivity(home);
+                        finish();
+                    }else{
+                        Toast.makeText(RegisterActivity.this, result.getDescription(), Toast.LENGTH_LONG).show();
+                        register.setEnabled(true);
+                        progressDialog.cancel();
+                    }
+
+                }
+            }.start();
+
+
         }
     }
 

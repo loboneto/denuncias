@@ -50,13 +50,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         // indice 0: idPerson, indice 1: name, indice 2: idContent, indice 3: Calendar, indice 4: comment.
         String [] parts = listComments.get(position).split(ConstModel.SPACE_ATR);
 
-        PersonTO personTO = dataBaseLocal.getPerson(Long.parseLong(parts[0]));
-
-        if(personTO.getImagePreviewPhotoTO() != null && !personTO.getImagePreviewPhotoTO().getData().isEmpty())
-            holder.circleImageViewComment.setImageBitmap(ManagerFile.stringToBitmap(personTO.getImagePreviewPhotoTO().getData()));
-
         holder.txtVComment.setText(parts[4]);
-        holder.txtVNameComment.setText(parts[1]);
+        holder.txtVNameComment.setText(parts[1].split(" ")[0]);
 
     }
 
@@ -74,7 +69,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         public ViewHolderComment(View itemView) {
             super(itemView);
 
-            circleImageViewComment = itemView.findViewById(R.id.circleImageViewComment);
             txtVNameComment = itemView.findViewById(R.id.txtVNameComment);
             txtVComment = itemView.findViewById(R.id.txtVComment);
 

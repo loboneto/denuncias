@@ -30,6 +30,7 @@ import youubi.common.to.ContentTO;
 public class HomeActivity extends AppCompatActivity {
 
     private FloatingActionButton createContent;
+    Fragment fragmentMap = new MapFragment();
 //    private Toolbar toolbar;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -43,7 +44,8 @@ public class HomeActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 //                    toolbar.setTitle("Mapa");
-                    fragment = new MapFragment();
+                    //fragment = new MapFragment();
+                    fragment = fragmentMap;
                     loadFragment(fragment);
                     return true;
                 case R.id.navigation_search:
