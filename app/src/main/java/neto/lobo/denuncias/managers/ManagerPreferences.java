@@ -126,8 +126,8 @@ public class ManagerPreferences {
         editor.commit();
     }
 
-    public void setNameNick(String nameFirst) {
-        editor.putString(NAME_FIRST, nameFirst);
+    public void setNameNick(String nameNick) {
+        editor.putString(NAME_NICK, nameNick);
         editor.commit();
     }
 

@@ -7,7 +7,7 @@
     tools:context=".views.activities.EditProfileActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/photoProfile"
+        android:id="@+id/photoProfileEdit"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginEnd="8dp"
@@ -25,12 +25,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:src="@drawable/ic_camera"
-        app:layout_constraintBottom_toBottomOf="@+id/photoProfile"
-        app:layout_constraintEnd_toEndOf="@+id/photoProfile"
+        android:src="@drawable/ic_edit"
+        app:layout_constraintBottom_toBottomOf="@+id/photoProfileEdit"
+        app:layout_constraintEnd_toEndOf="@+id/photoProfileEdit"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/photoProfile"
-        app:layout_constraintTop_toTopOf="@+id/photoProfile"
+        app:layout_constraintStart_toStartOf="@+id/photoProfileEdit"
+        app:layout_constraintTop_toTopOf="@+id/photoProfileEdit"
         app:layout_constraintVertical_bias="1.0"
         android:onClick="selectAvatar"/>
 
@@ -91,7 +91,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout6" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonsalveEdit"
         style="@style/ButtonPrimary"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -99,6 +99,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:enabled="true"
+        android:onClick="save"
         android:text="@string/save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
