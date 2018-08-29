@@ -1,7 +1,10 @@
 package neto.lobo.denuncias.views.activities;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Looper;
+import android.renderscript.Sampler;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +13,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +50,14 @@ public class DenunciaActivity extends AppCompatActivity {
     private TextView data;
     private ImageView imgVDenuncia;
     private EditText textComment;
+    private Button apoiarActivity;
 
 
     private RecyclerView recyclerView;
     private CommentAdapter commentAdapter;
     private List<String> comments = new ArrayList<>();
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +106,35 @@ public class DenunciaActivity extends AppCompatActivity {
             } else {
                 commentsEmpty.setVisibility(View.VISIBLE);
             }
+
+            apoiarActivity = findViewById(R.id.apoiarActivity);
+            apoiarActivity.setOnClickListener(new View.OnClickListener() {
+                @TargetApi(Build.VERSION_CODES.M)
+                @Override
+                public void onClick(View v) {
+                    ResultTO resultTO = managerRest.rateContent(content.getId(), ConstModel.RATE_POS);
+
+                    if(resultTO.getCode() == ConstResult.CODE_OK){
+                        Toast.makeText(getBaseContext(), "Apoiado!", Toast.LENGTH_LONG).show();
+                        apoiarActivity.setTextColor(getColor(R.color.grey));
+                    }else{
+                        resultTO = managerRest.rateContent(content.getId(), ConstModel.RATE_ZERO);
+
+                        if(resultTO.getCode() == ConstResult.CODE_OK){
+                            Toast.makeText(getBaseContext(), "Desapoido", Toast.LENGTH_LONG).show();
+                            apoiarActivity.setTextColor(getColor(R.color.colorAccent));
+                        }else{
+                            Toast.makeText(getBaseContext(), "Erro!", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                }
+            });
+
+            if(content.getPersonContentTO() != null)
+                if(content.getPersonContentTO().getRatePerson() == 1 ){
+                    apoiarActivity.setTextColor(getColor(R.color.grey));
+                }
 
         } else{
             Log.d("DialogContent", "O conteúdo veio vazio");

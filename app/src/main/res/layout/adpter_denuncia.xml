@@ -51,8 +51,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textDataAdpter" />
 
-    <ImageButton
-        android:id="@+id/imageButton2Adpter"
+    <Button
+        android:id="@+id/apoiarAdpter"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -60,11 +61,10 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:text="Apoiar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textDescriptionDenunciaAdpter"
-        app:srcCompat="@drawable/ic_notification"
-        tools:ignore="VectorDrawableCompat" />
+        app:layout_constraintTop_toBottomOf="@+id/textDescriptionDenunciaAdpter" />
 
 </android.support.constraint.ConstraintLayout>

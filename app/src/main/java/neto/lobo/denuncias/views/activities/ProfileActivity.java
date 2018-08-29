@@ -1,5 +1,7 @@
 package neto.lobo.denuncias.views.activities;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -57,8 +59,6 @@ public class ProfileActivity extends AppCompatActivity {
         name = findViewById(R.id.textNameProfile);
         photoProfile = findViewById(R.id.photoProfile);
 
-
-
         idPerson = getIntent().getExtras().getLong("personId");
 
         if(idPerson != 0)
@@ -94,15 +94,19 @@ public class ProfileActivity extends AppCompatActivity {
                         ResultTO resultTOPerson = rest.getPerson(idPerson);
                         if(resultTOPerson.getCode() == ConstResult.CODE_OK){
 
-                            PersonTO personTO = (PersonTO) resultTOPerson.getObject();
+                            final PersonTO personTO = (PersonTO) resultTOPerson.getObject();
                             dataBaseLocal.storePerson(personTO, personTO.getId());
 
                             final String fullName = personTO.getNameFirst() + " " + personTO.getNameLast();
                             runOnUiThread(new Runnable() {
+                                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
                                 @Override
                                 public void run() {
                                     name.setText(fullName);
                                     //photoProfile.setImageBitmap();
+                                    if(personTO.getNickname() != "" && personTO.getNickname() != null){
+                                        photoProfile.setImageDrawable(getDrawable(getAvatar(personTO.getNickname())));
+                                    }
                                 }
                             });
 
@@ -171,6 +175,23 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private int getAvatar(String avatar){
+        switch (avatar){
+            case "avatar1": return R.drawable.avatar1;
+            case "avatar2": return R.drawable.avatar2;
+            case "avatar3": return R.drawable.avatar3;
+            case "avatar4": return R.drawable.avatar4;
+            case "avatar5": return R.drawable.avatar5;
+            case "avatar6": return R.drawable.avatar6;
+            case "avatar7": return R.drawable.avatar7;
+            case "avatar8": return R.drawable.avatar8;
+            case "avatar9": return R.drawable.avatar9;
+            case "avatar10": return R.drawable.avatar10;
+            case "avatar11": return R.drawable.avatar11;
+            case "avatar12": return R.drawable.avatar12;
+        }
+        return R.drawable.avatar1;
+    }
 
     public void back(View view){
         finish();
