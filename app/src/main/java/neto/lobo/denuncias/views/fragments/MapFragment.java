@@ -24,22 +24,27 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerContexto;
+import neto.lobo.denuncias.managers.ManagerPreferences;
 import neto.lobo.denuncias.managers.ManagerRest;
 import neto.lobo.denuncias.views.activities.LoginActivity;
 import youubi.client.help.sqlite.DataBaseLocal;
+import youubi.common.constants.ConstModel;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.ContentTO;
 import youubi.common.to.CoordTO;
+import youubi.common.to.PersonContentTO;
 import youubi.common.to.ResultTO;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
     private DataBaseLocal dataBaseLocal;
     private ManagerRest rest;
+    private ManagerPreferences managerPreferences;
 
     private GoogleMap mMap;
     protected View mView;
@@ -61,6 +66,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         dataBaseLocal = DataBaseLocal.getInstance(getActivity());
         rest = new ManagerRest(getContext());
+        managerPreferences = new ManagerPreferences(getActivity());
 
         setMap();
         return mView;
@@ -75,52 +81,79 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         UiSettings settings = mMap.getUiSettings();
         settings.setAllGesturesEnabled(true);
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-5.203776755879636, -37.3215426877141), 10));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-5.203776755879636, -37.3215426877141), 14));
 
-        googleMap.setOnMarkerClickListener(this);
+        mMap.setOnMarkerClickListener(this);
 
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
-        progressDialog.setMessage("Carregando...");
-        progressDialog.show();
+        loadContents();
 
-        new Thread(){
-            @Override
-            public void run () {
-                Looper.prepare();
-
-                ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
-
-                if(result.getCode() == ConstResult.CODE_OK){
-
-                    list = result.getListObjectCast();
-                    dataBaseLocal.storeListContent(list);
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            for(ContentTO contentTO : list){
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(contentTO.getCoordTO().getLatitude(), contentTO.getCoordTO().getLongitude()))
-                                        .title("" + contentTO.getId())
-                                        .snippet(contentTO.getPersonTO().getNameFirst())
-                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
-                            }
-
-                            progressDialog.cancel();
-
-                        }
-                    });
-
-
-                }   else{
-                    Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
-                }
-
-            }
-        }.start();
+//        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+//        progressDialog.setIndeterminate(true);
+//        progressDialog.setCancelable(false);
+//        progressDialog.setMessage("Carregando...");
+//        progressDialog.show();
+//
+//        new Thread(){
+//            @Override
+//            public void run () {
+//                Looper.prepare();
+//
+//                final ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
+//
+//
+//                if(result.getCode() == ConstResult.CODE_OK){
+//
+//                    list = result.getListObjectCast();
+//                    dataBaseLocal.storeListContent(list);
+//
+//
+//                }   else{
+//
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
+//                            progressDialog.dismiss();
+//                        }
+//                    });
+//
+//                }
+//
+//                // Carrega os que criei
+//                List<PersonContentTO> listPersonContentTO = dataBaseLocal.getListPersonContentByPersonByRelation(managerPreferences.getId(), ConstModel.RELATION_CREATED);
+//                if(listPersonContentTO != null && !listPersonContentTO.isEmpty()){
+//                    if(list == null)
+//                        list = new ArrayList<>();
+//
+//                    for(PersonContentTO personContentTO : listPersonContentTO) {
+//                        ContentTO contentTO = personContentTO.getContentTO();
+//                        list.add(contentTO);
+//                    }
+//
+//                }
+//
+//                getActivity().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        if(list != null && !list.isEmpty()){
+//
+//                            for(ContentTO contentTO : list){
+//                                mMap.addMarker(new MarkerOptions()
+//                                        .position(new LatLng(contentTO.getCoordTO().getLatitude(), contentTO.getCoordTO().getLongitude()))
+//                                        .title("" + contentTO.getId())
+//                                        .snippet(contentTO.getPersonTO().getNameFirst())
+//                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
+//                            }
+//
+//                            progressDialog.dismiss();
+//                        }
+//
+//                    }
+//                });
+//
+//            }
+//        }.start();
 
 
         // passar minha localização
@@ -146,7 +179,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         try {
 
-            googleMap.setMyLocationEnabled(true);
+            mMap.setMyLocationEnabled(true);
 
         } catch (SecurityException e) {
             Log.d("Itagores", "onMapReady: sem permissao de GPS");
@@ -164,6 +197,101 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     public void setMap() {
         ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
+    }
+
+    public void loadContents(){
+
+        Log.e("--->", "Load Contents");
+
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Carregando...");
+        progressDialog.show();
+
+        new Thread(){
+            @Override
+            public void run () {
+                Looper.prepare();
+
+                final ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
+
+
+                if(result.getCode() == ConstResult.CODE_OK){
+
+                    list = result.getListObjectCast();
+                    dataBaseLocal.storeListContent(list);
+
+
+                }   else{
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
+                            progressDialog.dismiss();
+                        }
+                    });
+
+                }
+
+                // Carrega os que criei
+                List<PersonContentTO> listPersonContentTO = dataBaseLocal.getListPersonContentByPersonByRelation(managerPreferences.getId(), ConstModel.RELATION_CREATED);
+                if(listPersonContentTO != null && !listPersonContentTO.isEmpty()){
+                    if(list == null)
+                        list = new ArrayList<>();
+
+                    for(PersonContentTO personContentTO : listPersonContentTO) {
+                        ContentTO contentTO = personContentTO.getContentTO();
+                        list.add(contentTO);
+                    }
+
+                }
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if(list != null && !list.isEmpty()){
+
+                            for(ContentTO contentTO : list){
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(contentTO.getCoordTO().getLatitude(), contentTO.getCoordTO().getLongitude()))
+                                        .title("" + contentTO.getId())
+                                        .snippet(contentTO.getPersonTO().getNameFirst())
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
+                            }
+
+                            progressDialog.dismiss();
+                        }
+
+                    }
+                });
+
+            }
+        }.start();
+
+
+        // passar minha localização
+//        ResultTO result = rest.getListContent(30, 1, -5.203776755879636, -37.3215426877141);
+//
+//        if(result.getCode() == ConstResult.CODE_OK){
+//
+//            list = result.getListObjectCast();
+//            dataBaseLocal.storeListContent(list);
+//
+//            for(int i = 0; i < list.size(); i++){
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(list.get(i).getCoordTO().getLatitude(), list.get(i).getCoordTO().getLongitude()))
+//                        .title("" + list.get(i).getId())
+//                        .snippet(list.get(i).getPersonTO().getNameFirst())
+//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_denuncia)));
+//            }
+//        }else{
+//            Toast.makeText(getContext(), "Erro ao carregar denúnicas " + result.getCode(), Toast.LENGTH_LONG);
+//        }
+
+
     }
 
     protected int getLayoutId() {

@@ -1,6 +1,8 @@
 package neto.lobo.denuncias.views.activities;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -30,7 +33,7 @@ import youubi.common.to.ContentTO;
 public class HomeActivity extends AppCompatActivity {
 
     private FloatingActionButton createContent;
-    Fragment fragmentMap = new MapFragment();
+    private Fragment fragmentMap = new MapFragment();
 //    private Toolbar toolbar;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -94,7 +97,7 @@ public class HomeActivity extends AppCompatActivity {
         createContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), CreateActivity.class));
+                startActivityForResult(new Intent(getApplicationContext(), CreateActivity.class), 100);
             }
         });
 
@@ -113,5 +116,20 @@ public class HomeActivity extends AppCompatActivity {
 //        toolbar.setTitle("Mapa");
         Fragment fragment = new MapFragment();
         loadFragment(fragment);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 100){
+
+            Log.e("--->", "return criate");
+            MapFragment fragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+            if(fragment != null)
+                fragment.loadContents();
+
+        }
     }
 }

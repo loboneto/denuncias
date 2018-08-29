@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/current_place"
+        android:title="@string/current_place" />
+
+    <item
+        android:id="@+id/open_map"
+        android:title="@string/open_map" />
+
+
+
+</menu>

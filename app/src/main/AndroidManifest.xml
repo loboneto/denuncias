@@ -48,6 +48,8 @@
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".views.activities.ProfileActivity" />
         <activity android:name=".views.activities.ListAvatarActivity"/>
+        <activity android:name=".views.activities.MapActivity"/>
+
     </application>
 
 </manifest>

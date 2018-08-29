@@ -1,8 +1,10 @@
 package neto.lobo.denuncias.views.activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,10 +18,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.constants.ConstAndroid;
 import neto.lobo.denuncias.managers.ManagerPreferences;
 import neto.lobo.denuncias.managers.ManagerRest;
+import youubi.client.help.sqlite.DataBaseLocal;
 import youubi.common.constants.ConstModel;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.ContentTO;
@@ -32,10 +36,18 @@ import youubi.common.tools.CalendarTools;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private ManagerPreferences managerPreferences;
+    private DataBaseLocal dataBaseLocal;
+    private CircleImageView photoProfile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        managerPreferences = new ManagerPreferences(this);
+        dataBaseLocal = DataBaseLocal.getInstance(this);
+        photoProfile = findViewById(R.id.photoProfile);
     }
 
     public void register(View view){
@@ -82,6 +94,8 @@ public class RegisterActivity extends AppCompatActivity {
             cont.setLatitude(0);
             cont.setLongitude(0);
 
+            user.setNickname(managerPreferences.getNameNick());
+
             final ManagerRest rest = new ManagerRest(RegisterActivity.this);
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.setIndeterminate(true);
@@ -97,20 +111,23 @@ public class RegisterActivity extends AppCompatActivity {
                     ResultTO result = rest.createPerson("", 0, user, senha.getText().toString(), null, null);
 
 
-
                     Log.d("Create Person: ", result.toString());
 
                     if(result.getCode() == ConstResult.CODE_OK){
+
+                        PersonTO personTO = (PersonTO) result.getObject();
+
                         ManagerPreferences pref = new ManagerPreferences(getApplicationContext());
-                        pref.loginSession(((PersonTO)result.getObject()).getId(), ((PersonTO)result.getObject()).getEmail(),
-                                ((PersonTO)result.getObject()).getPassPlain(),
-                                ((PersonTO)result.getObject()).getNameFirst(),
-                                ((PersonTO)result.getObject()).getNameLast(),
-                                false, false, ((PersonTO)result.getObject()).getToken());
+                        pref.loginSession(personTO.getId(), personTO.getEmail(), personTO.getPassPlain(), personTO.getNameFirst(),
+                                personTO.getNameLast(),false, false, personTO.getToken());
+
+                        dataBaseLocal.storePerson(personTO, personTO.getId());
+
                         Intent home = new Intent(getApplicationContext(), HomeActivity.class);
                         progressDialog.cancel();
                         startActivity(home);
                         finish();
+
                     }else{
                         Toast.makeText(RegisterActivity.this, result.getDescription(), Toast.LENGTH_LONG).show();
                         register.setEnabled(true);
@@ -126,7 +143,25 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void selectAvatar(View view){
         Intent intent = new Intent(this, ListAvatarActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, 10);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == Activity.RESULT_OK || requestCode == 10){
+
+            photoProfile.setImageResource(getAvatar());
+
+        }
+
+    }
+
+
+    private int getAvatar(){
+        Resources resources = this.getResources();
+        return resources.getIdentifier(managerPreferences.getNameNick(), "drawable", this.getPackageName());
     }
 
     public void returnLogin(View view) {

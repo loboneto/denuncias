@@ -30,9 +30,12 @@
         <item>Espaços Públicos</item>
         <item>Transporte Público</item>
     </string-array>
+    <string name="current_place">Obter a localização atual</string>
+    <string name="open_map">Abrir mapa</string>
     <string name="iluminação">Iluminação</string>
     <string name="lixo">Lixo</string>
     <string name="ruas_e_Calçadas">Ruas e Calçadas</string>
     <string name="espacos_publicos">Espaços Públicos</string>
     <string name="transporte_publico">Transporte Público</string>
+
 </resources>

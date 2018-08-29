@@ -99,6 +99,8 @@ public class ProfileFragment extends Fragment {
                 if(result.getCode() == ConstResult.CODE_OK){
                     startActivity(new Intent(getContext(), LoginActivity.class));
                     getActivity().finish();
+                } else {
+
                 }
             }
         });
