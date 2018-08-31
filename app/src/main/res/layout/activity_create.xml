@@ -9,6 +9,7 @@
 
     <ImageView
         android:id="@+id/imgVFoto"
+        android:onClick="pickImage"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
@@ -18,7 +19,7 @@
         android:layout_marginTop="16dp"
         android:background="@color/grey"
         android:contentDescription="@string/photoContent"
-        android:scaleType="center"
+        android:scaleType="centerInside"
         android:src="@drawable/ic_photo"
         app:layout_constraintDimensionRatio="16:9"
         app:layout_constraintEnd_toEndOf="parent"

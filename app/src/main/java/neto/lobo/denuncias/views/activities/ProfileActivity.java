@@ -1,6 +1,7 @@
 package neto.lobo.denuncias.views.activities;
 
 import android.annotation.TargetApi;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.supercharge.shimmerlayout.ShimmerLayout;
 import neto.lobo.denuncias.R;
+import neto.lobo.denuncias.managers.ManagerPreferences;
 import neto.lobo.denuncias.managers.ManagerRest;
 import neto.lobo.denuncias.views.adapters.DenunciaAdpter;
 import youubi.client.help.sqlite.DataBaseLocal;
@@ -37,6 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private ManagerRest rest;
+    private ManagerPreferences managerPreferences;
     private ResultTO result;
     private DataBaseLocal dataBaseLocal;
 
@@ -51,6 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         rest = new ManagerRest(this);
+        managerPreferences = new ManagerPreferences(this);
         dataBaseLocal = DataBaseLocal.getInstance(this);
 
         shimmerLayout = findViewById(R.id.shimmerLayout);
@@ -83,6 +87,10 @@ public class ProfileActivity extends AppCompatActivity {
             if(person != null){
                 String fullName = person.getNameFirst() + " " + person.getNameLast();
                 name.setText(fullName);
+
+                if(person.getNickname() != null && !person.getNickname().isEmpty())
+                    photoProfile.setImageResource(getAvatar(person.getNickname()));
+
             } else {
 
                 new Thread(){
@@ -104,8 +112,8 @@ public class ProfileActivity extends AppCompatActivity {
                                 public void run() {
                                     name.setText(fullName);
                                     //photoProfile.setImageBitmap();
-                                    if(personTO.getNickname() != "" && personTO.getNickname() != null){
-                                        photoProfile.setImageDrawable(getDrawable(getAvatar(personTO.getNickname())));
+                                    if(personTO.getNickname() != null && !personTO.getNickname().isEmpty()){
+                                        photoProfile.setImageResource(getAvatar(personTO.getNickname()));
                                     }
                                 }
                             });
@@ -175,22 +183,9 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private int getAvatar(String avatar){
-        switch (avatar){
-            case "avatar1": return R.drawable.avatar1;
-            case "avatar2": return R.drawable.avatar2;
-            case "avatar3": return R.drawable.avatar3;
-            case "avatar4": return R.drawable.avatar4;
-            case "avatar5": return R.drawable.avatar5;
-            case "avatar6": return R.drawable.avatar6;
-            case "avatar7": return R.drawable.avatar7;
-            case "avatar8": return R.drawable.avatar8;
-            case "avatar9": return R.drawable.avatar9;
-            case "avatar10": return R.drawable.avatar10;
-            case "avatar11": return R.drawable.avatar11;
-            case "avatar12": return R.drawable.avatar12;
-        }
-        return R.drawable.avatar1;
+    private int getAvatar(String nameAvatar){
+        Resources resources = this.getResources();
+        return resources.getIdentifier(nameAvatar, "drawable", this.getPackageName());
     }
 
     public void back(View view){

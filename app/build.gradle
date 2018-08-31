@@ -4,7 +4,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "neto.lobo.denuncias"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -36,7 +36,7 @@ dependencies {
     implementation 'com.google.maps.android:android-maps-utils:0.5'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation files('libs/gson-2.8.0.jar')
-    implementation files('libs/youubi_client_help_connection_2018_07_04.jar')
-    implementation files('libs/youubi_client_help_sqlite_2018_07_04.jar')
-    implementation files('libs/youubi_common_api_2018_07_04.jar')
+    implementation files('libs/youubi_client_help_connection_2018_07_19.jar')
+    implementation files('libs/youubi_client_help_sqlite_2018_07_19.jar')
+    implementation files('libs/youubi_common_api_2018_07_19.jar')
 }

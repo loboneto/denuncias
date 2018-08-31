@@ -3,21 +3,29 @@ package neto.lobo.denuncias.views.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,11 +41,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.List;
 
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.constants.ConstAndroid;
+import neto.lobo.denuncias.managers.ManagerFile;
 import neto.lobo.denuncias.managers.ManagerRest;
 import neto.lobo.denuncias.util.GeocodingTask;
 import neto.lobo.denuncias.util.TaskInterface;
@@ -76,6 +86,11 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
     private Spinner spinner;
 
     private ImageOriginalTO imageOriginalTO;
+    private Bitmap bitmap;
+    private static final int PICK_IMAGE_REQUEST = 111;
+    private static final int PICTURE_RESULT = 222;
+    private ContentValues cv;
+    private Uri imageUri;
 
     private ManagerRest managerRest;
     private DataBaseLocal dataBaseLocal;
@@ -127,6 +142,19 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
             }.start();
         }
 
+        //verifica a permissão
+        if( ContextCompat.checkSelfPermission( this, Manifest.permission.WRITE_EXTERNAL_STORAGE ) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission( this, Manifest.permission.READ_EXTERNAL_STORAGE ) != PackageManager.PERMISSION_GRANTED ){
+
+            ActivityCompat.requestPermissions( this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE}, 0 );
+
+        }
+
+        if( ContextCompat.checkSelfPermission( this, Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions( this, new String[]{Manifest.permission.CAMERA}, 0 );
+        }
+
     }
 
     public void back (View view){
@@ -149,10 +177,12 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
         progressDialog.setMessage("Enviando denuncia...");
         progressDialog.show();
 
-        if(description.isEmpty() || latitude == 0 || longitude == 0){
+        if(description.isEmpty() || latitude == 0 || longitude == 0 || imageOriginalTO == null){
 
             if(description.isEmpty())
                 Toast.makeText(this, "Por favor preencha a descrição", Toast.LENGTH_SHORT).show();
+            else if(imageOriginalTO == null)
+                Toast.makeText(this, "Não foi possivel obter a imagem da denuncia, por favor obtenha a foto novamente.", Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(this, "Não foi possivel obter a localização da ocorrencia, por favor localize a denuncia novamente.", Toast.LENGTH_SHORT).show();
 
@@ -236,6 +266,21 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
     }
 
+
+    public void pickImage(View v){
+
+        cv = new ContentValues();
+        cv.put(MediaStore.Images.Media.TITLE, "My Picture");
+        cv.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
+        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        startActivityForResult(intent, PICTURE_RESULT);
+
+    }
+
+
+
     @Override
     public boolean onMenuItemClick(MenuItem item) {
 
@@ -288,8 +333,78 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
                         Log.e("--->", latitude + "");
                         new GeocodingTask(this, this).execute(latitude, longitude);
                     }
+                    break;
+
+
+                case PICK_IMAGE_REQUEST:
+
+                    if(data != null && data.getData() != null){
+                        Uri filePath = data.getData();
+
+                        try {
+                            //getting image from gallery
+                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+
+                            //Setting image to ImageView
+
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                            byte[] imageBytes = baos.toByteArray();
+                            String imageString = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+
+
+
+                            // This method will be executed once the timer is over
+                            // Start your app main activity
+                            byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
+
+                            final Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                            new Handler().postDelayed(new Runnable() {
+
+                                /*
+                                 * Showing splash screen with a timer. This will be useful when you
+                                 * want to show case your app logo / company
+                                 */
+
+                                @Override
+                                public void run() {
+                                    // This method will be executed once the timer is over
+                                    // Start your app main activity
+                                    imgVFoto.setImageBitmap(decodedByte);
+
+                                }
+                            },2000);
+                            /* Bitmap bitmaps = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                             */
+                            // close this activity
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
 
                     break;
+
+
+
+                case PICTURE_RESULT:
+
+                    try {
+
+                        Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                        imgVFoto.setImageBitmap(thumbnail);
+
+                        imageOriginalTO = ManagerFile.getImageOriginal(this, imageUri, null);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+
+
+
             }
         }
     }

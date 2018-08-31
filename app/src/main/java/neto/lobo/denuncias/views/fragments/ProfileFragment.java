@@ -1,10 +1,14 @@
 package neto.lobo.denuncias.views.fragments;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -16,75 +20,85 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.supercharge.shimmerlayout.ShimmerLayout;
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerPreferences;
 import neto.lobo.denuncias.managers.ManagerRest;
 import neto.lobo.denuncias.views.activities.EditProfileActivity;
 import neto.lobo.denuncias.views.activities.LoginActivity;
+import neto.lobo.denuncias.views.activities.ProfileActivity;
 import neto.lobo.denuncias.views.adapters.DenunciaAdpter;
+import youubi.client.help.sqlite.DataBaseLocal;
+import youubi.common.constants.ConstModel;
 import youubi.common.constants.ConstResult;
 import youubi.common.to.ContentTO;
+import youubi.common.to.PersonContentTO;
 import youubi.common.to.ResultTO;
 
 public class ProfileFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private DenunciaAdpter denunciaAdpter;
-    private List<ContentTO> contents;
+    private List<ContentTO> contents = new ArrayList<>();
+    private ShimmerLayout shimmerLayout;
+
     private ManagerRest managerRest;
-    private ResultTO result;
     private ManagerPreferences preferences;
+    private DataBaseLocal dataBaseLocal;
+
     private CircleImageView photoProfile;
     private TextView name;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private Activity activity;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup containerTrending, @Nullable Bundle savedInstanceState) {
-
         final View view = inflater.inflate(R.layout.fragment_profile, containerTrending, false);
+
+        activity = getActivity();
+
+        managerRest = new ManagerRest(activity);
+        preferences = new ManagerPreferences(activity);
+        dataBaseLocal = DataBaseLocal.getInstance(getContext());
+        shimmerLayout = view.findViewById(R.id.shimmerLayout);
+        shimmerLayout.startShimmerAnimation();
+
+
 
         name = view.findViewById(R.id.textName);
         photoProfile = view.findViewById(R.id.photoProfile);
-        ManagerPreferences preferences = new ManagerPreferences(getContext());
 
         if(preferences.getNameNick() != ""){
-            photoProfile.setImageDrawable(getContext().getDrawable(getAvatar(preferences.getNameNick())));
+            photoProfile.setImageResource(getAvatar());
         }
+
         name.setText(preferences.getNameFirst());
 
-        recyclerView = view.findViewById(R.id.recyclerViewProfile);
 
+
+
+        recyclerView = view.findViewById(R.id.recyclerViewProfile);
+        recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+        denunciaAdpter = new DenunciaAdpter(contents);
+        recyclerView.setAdapter(denunciaAdpter);
 
-        managerRest = new ManagerRest(getContext());
-        preferences = new ManagerPreferences(getContext());
-
-        result = managerRest.getListContent(preferences.getId());
-
-        //Log.d("meeerda", result.toString());
-
-        if(result.getCode() == ConstResult.CODE_OK){
-
-            contents = result.getListObjectCast();
-
-            denunciaAdpter = new DenunciaAdpter(contents);
-
-            recyclerView.setAdapter(denunciaAdpter);
-
-        }
 
         Button edit = view.findViewById(R.id.buttonEditProfile);
 
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(getContext(), EditProfileActivity.class),1);
+                startActivityForResult(new Intent(activity, EditProfileActivity.class),1);
             }
         });
 
@@ -94,47 +108,142 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //startActivity(new Intent(getContext(), EditProfileActivity.class));
-                result = managerRest.logout();
 
-                if(result.getCode() == ConstResult.CODE_OK){
-                    startActivity(new Intent(getContext(), LoginActivity.class));
-                    getActivity().finish();
-                } else {
+                final ProgressDialog progressDialog = new ProgressDialog(activity);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setCancelable(false);
+                progressDialog.setMessage("Deslogando...");
+                progressDialog.show();
 
-                }
+                new Thread() {
+
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+
+                        ResultTO result = managerRest.logout();
+
+                        if(result.getCode() == ConstResult.CODE_OK){
+
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    progressDialog.dismiss();
+                                    startActivity(new Intent(activity, LoginActivity.class));
+                                    activity.finish();
+
+                                }
+                            });
+
+
+                        } else {
+                            Log.e("--->", "Erro logout: " + result.getDescription() + " cod: " + result.getCode());
+                        }
+
+                    }
+                }.start();
             }
         });
 
+        loadContent();
 
         return view;
     }
 
-    private int getAvatar(String avatar){
-        switch (avatar){
-            case "avatar1": return R.drawable.avatar1;
-            case "avatar2": return R.drawable.avatar2;
-            case "avatar3": return R.drawable.avatar3;
-            case "avatar4": return R.drawable.avatar4;
-            case "avatar5": return R.drawable.avatar5;
-            case "avatar6": return R.drawable.avatar6;
-            case "avatar7": return R.drawable.avatar7;
-            case "avatar8": return R.drawable.avatar8;
-            case "avatar9": return R.drawable.avatar9;
-            case "avatar10": return R.drawable.avatar10;
-            case "avatar11": return R.drawable.avatar11;
-            case "avatar12": return R.drawable.avatar12;
-        }
-        return R.drawable.avatar1;
+    public void loadContent(){
+
+        new Thread(){
+            @Override
+            public void run () {
+                Looper.prepare();
+
+//                List<PersonContentTO> listPersonContent = dataBaseLocal.getListPersonContentByContentByRelation(preferences.getId(), ConstModel.RELATION_CREATED);
+//
+//                if(listPersonContent != null && !listPersonContent.isEmpty()){
+//                    Log.e("--->", "PersonContent nao vazio");
+//
+//                    for(PersonContentTO personContentTO : listPersonContent){
+//                        contents.add(personContentTO.getContentTO());
+//                    }
+//
+//                    activity.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            denunciaAdpter.notifyDataSetChanged();
+//                            shimmerLayout.stopShimmerAnimation();
+//                            shimmerLayout.setVisibility(View.GONE);
+//                        }
+//                    });
+//
+//                } else {
+
+                    Log.e("--->", "PersonContent vazio");
+
+                    final ResultTO result = managerRest.getListPersonContent(preferences.getId(), 0, ConstModel.RELATION_CREATED, ConstModel.WHAT_OBJECTS_ALL);
+
+                    if(result.getCode() == ConstResult.CODE_OK){
+
+                        List<PersonContentTO> listPersonContent = result.getListObjectCast();
+                        if(listPersonContent != null && !listPersonContent.isEmpty()) {
+
+                            for (PersonContentTO personContentTO : listPersonContent) {
+                                contents.add(personContentTO.getContentTO());
+                                //dataBaseLocal.storePersonContent(personContentTO, personContentTO.getPersonTO().getId(), personContentTO.getContentTO().getId());
+                            }
+
+                            //dataBaseLocal.storeListPersonContent(listPersonContent);
+                        }
+
+
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                denunciaAdpter.notifyDataSetChanged();
+                                shimmerLayout.stopShimmerAnimation();
+                                shimmerLayout.setVisibility(View.GONE);
+                            }
+                        });
+
+                    } else {
+
+
+                        activity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                Toast.makeText(activity, "Erro ao carregar seus conteudos, por favor tente novamente, erro: " + result.getCode(), Toast.LENGTH_LONG).show();
+                                Log.e("--->", "Erro carregar conteudo: " + result.getDescription());
+                                denunciaAdpter.notifyDataSetChanged();
+                                shimmerLayout.stopShimmerAnimation();
+                                shimmerLayout.setVisibility(View.GONE);
+                            }
+                        });
+
+                    }
+
+
+                //}
+
+
+
+            }
+        }.start();
+
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+
+    private int getAvatar(){
+        Resources resources = this.getResources();
+        return resources.getIdentifier(preferences.getNameNick(), "drawable", activity.getPackageName());
+    }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        ManagerPreferences preferences = new ManagerPreferences(getContext());
-
-        photoProfile.setImageDrawable(getContext().getDrawable(getAvatar(preferences.getNameNick())));
+        photoProfile.setImageResource(getAvatar());
         name.setText(preferences.getNameFirst());
 
     }
