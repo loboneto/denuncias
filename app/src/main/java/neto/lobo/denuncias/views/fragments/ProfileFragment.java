@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -102,7 +103,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        Button logout = view.findViewById(R.id.buttonLogout);
+        ImageButton logout = view.findViewById(R.id.buttonLogout);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
