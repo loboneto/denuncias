@@ -22,6 +22,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,7 +45,11 @@ import com.google.android.gms.location.LocationServices;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import neto.lobo.denuncias.R;
@@ -86,6 +91,7 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
     private EditText edtDescription;
     private Spinner spinner;
 
+    private static final int CAMERA_TESTE = 111;
     private static final int PICTURE_RESULT = 222;
     private ImageOriginalTO imageOriginalTO;
     private Bitmap bitmap;
@@ -152,6 +158,12 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
         if( ContextCompat.checkSelfPermission( this, Manifest.permission.CAMERA ) != PackageManager.PERMISSION_GRANTED ){
             ActivityCompat.requestPermissions( this, new String[]{Manifest.permission.CAMERA}, 0 );
         }
+
+
+        ContentValues cv = new ContentValues();
+        cv.put(MediaStore.Images.Media.TITLE, "My Picture");
+        cv.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
+        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
 
     }
 
@@ -267,13 +279,9 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
     public void pickImage(View v){
 
-        ContentValues cv = new ContentValues();
-        cv.put(MediaStore.Images.Media.TITLE, "My Picture");
-        cv.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
-        imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+        Log.e("--->", "ImageURI pickImage: " + imageUri);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        Log.e("--->", "ImageURI pickImage: " + imageUri);
         startActivityForResult(intent, PICTURE_RESULT);
 
     }
@@ -321,6 +329,10 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
         Log.e("--->", "Activity Result: requestCode: " + requestCode + " ResultCode: " + resultCode);
 
+        if(data != null){
+            Log.e("--->", "Data nao e vazio: " + data.getData());
+        }
+
         if(resultCode == Activity.RESULT_OK) {
 
             switch(requestCode) {
@@ -336,6 +348,9 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
                     }
                     break;
 
+                case CAMERA_TESTE:
+                    // Para testes da camera
+                    break;
 
 
                 case PICTURE_RESULT:
