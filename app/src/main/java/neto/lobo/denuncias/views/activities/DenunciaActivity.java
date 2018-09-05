@@ -2,6 +2,7 @@ package neto.lobo.denuncias.views.activities;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Looper;
 import android.renderscript.Sampler;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import neto.lobo.denuncias.R;
 import neto.lobo.denuncias.managers.ManagerFile;
 import neto.lobo.denuncias.managers.ManagerPreferences;
@@ -43,6 +45,7 @@ public class DenunciaActivity extends AppCompatActivity {
     private ManagerRest managerRest;
 
     private ContentTO content;
+    private boolean hasSupport;
 
     private TextView name;
     private TextView description;
@@ -50,7 +53,8 @@ public class DenunciaActivity extends AppCompatActivity {
     private TextView data;
     private ImageView imgVDenuncia;
     private EditText textComment;
-    private Button apoiarActivity;
+    private Button btnApoiar;
+    private CircleImageView photoProfile;
 
 
     private RecyclerView recyclerView;
@@ -73,6 +77,8 @@ public class DenunciaActivity extends AppCompatActivity {
         data = findViewById(R.id.textData);
         imgVDenuncia = findViewById(R.id.imgVDenuncia);
         textComment = findViewById(R.id.textComment);
+        photoProfile = findViewById(R.id.photoProfile);
+
 
 
         recyclerView = findViewById(R.id.recyclerViewComments);
@@ -87,6 +93,10 @@ public class DenunciaActivity extends AppCompatActivity {
         if (contentId != 0) {
 
             content = dataBaseLocal.getContent(contentId);
+
+            if(managerPreferences.getNameNick() != ""){
+                photoProfile.setImageResource(getAvatar());
+            }
 
             name.setText(content.getPersonTO().getNameFirst());
             description.setText(content.getDescription());
@@ -107,34 +117,23 @@ public class DenunciaActivity extends AppCompatActivity {
                 commentsEmpty.setVisibility(View.VISIBLE);
             }
 
-            apoiarActivity = findViewById(R.id.apoiarActivity);
-            apoiarActivity.setOnClickListener(new View.OnClickListener() {
-                @TargetApi(Build.VERSION_CODES.M)
-                @Override
-                public void onClick(View v) {
-                    ResultTO resultTO = managerRest.rateContent(content.getId(), ConstModel.RATE_POS);
+            btnApoiar = findViewById(R.id.btnApoiar);
+            PersonContentTO personContentTO = dataBaseLocal.getPersonContent(managerPreferences.getId(), content.getId());
+            if(personContentTO != null){
 
-                    if(resultTO.getCode() == ConstResult.CODE_OK){
-                        Toast.makeText(getBaseContext(), "Apoiado!", Toast.LENGTH_LONG).show();
-                        apoiarActivity.setTextColor(getColor(R.color.grey));
-                    }else{
-                        resultTO = managerRest.rateContent(content.getId(), ConstModel.RATE_ZERO);
+                if(personContentTO.getRatePerson() == ConstModel.RATE_POS){
+                    // Tem apoiado
+                    hasSupport = true;
+                    btnApoiar.setBackground(getResources().getDrawable(R.drawable.ic_apoiado));
 
-                        if(resultTO.getCode() == ConstResult.CODE_OK){
-                            Toast.makeText(getBaseContext(), "Desapoido", Toast.LENGTH_LONG).show();
-                            apoiarActivity.setTextColor(getColor(R.color.colorAccent));
-                        }else{
-                            Toast.makeText(getBaseContext(), "Erro!", Toast.LENGTH_LONG).show();
-                        }
-                    }
-
+                } else {
+                    // nao apoiou
+                    hasSupport = false;
                 }
-            });
 
-            if(content.getPersonContentTO() != null)
-                if(content.getPersonContentTO().getRatePerson() == 1 ){
-                    apoiarActivity.setTextColor(getColor(R.color.grey));
-                }
+            }
+
+
 
         } else{
             Log.d("DialogContent", "O conteúdo veio vazio");
@@ -216,5 +215,57 @@ public class DenunciaActivity extends AppCompatActivity {
 
     }
 
+    public void apoiar(View v){
+
+        if(hasSupport){
+
+            ResultTO resultTO = managerRest.rateContent(content.getId(), ConstModel.RATE_ZERO);
+
+            if (resultTO.getCode() == ConstResult.CODE_OK) {
+
+                hasSupport = false;
+
+                Toast.makeText(this, "Desapoido", Toast.LENGTH_LONG).show();
+                btnApoiar.setBackground(getResources().getDrawable(R.drawable.ic_apoio));
+
+                PersonContentTO personContentTO = (PersonContentTO) resultTO.getObject();
+                dataBaseLocal.storePersonContent(personContentTO, personContentTO.getPersonTO().getId(), personContentTO.getContentTO().getId());
+
+            } else {
+                Toast.makeText(this, "Erro ao retirar apoio!", Toast.LENGTH_LONG).show();
+            }
+
+        } else {
+
+            ResultTO resultTO = managerRest.rateContent(content.getId(), ConstModel.RATE_POS);
+
+            if (resultTO.getCode() == ConstResult.CODE_OK) {
+
+                hasSupport = true;
+
+                Toast.makeText(this, "Apoiado!", Toast.LENGTH_LONG).show();
+                btnApoiar.setBackground(getResources().getDrawable(R.drawable.ic_apoiado));
+
+                PersonContentTO personContentTO = (PersonContentTO) resultTO.getObject();
+                dataBaseLocal.storePersonContent(personContentTO, personContentTO.getPersonTO().getId(), personContentTO.getContentTO().getId());
+
+            } else {
+                if(resultTO.getCode() == 1017){
+                    Toast.makeText(this, "Você não pode apoiar sua denuncia" + resultTO.getDescription(), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "Erro ao apoiar! " + resultTO.getDescription(), Toast.LENGTH_LONG).show();
+                }
+
+                Log.e("--->", "Result: " + resultTO.getCode() + " msg: " + resultTO.getDescription());
+            }
+        }
+
+
+    }
+
+    private int getAvatar(){
+        Resources resources = this.getResources();
+        return resources.getIdentifier(managerPreferences.getNameNick(), "drawable", this.getPackageName());
+    }
 
 }

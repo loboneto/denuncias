@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -72,7 +73,8 @@ public class ProfileActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewProfileActivity);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        denunciaAdpter = new DenunciaAdpter(contents);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        denunciaAdpter = new DenunciaAdpter(contents, this);
         recyclerView.setAdapter(denunciaAdpter);
 
         loadProfile();

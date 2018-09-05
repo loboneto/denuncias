@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
@@ -42,6 +43,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
@@ -82,14 +84,11 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
     private ImageView imgVFoto;
     private EditText edtDescription;
-    private Button btnLocation;
     private Spinner spinner;
 
+    private static final int PICTURE_RESULT = 222;
     private ImageOriginalTO imageOriginalTO;
     private Bitmap bitmap;
-    private static final int PICK_IMAGE_REQUEST = 111;
-    private static final int PICTURE_RESULT = 222;
-    private ContentValues cv;
     private Uri imageUri;
 
     private ManagerRest managerRest;
@@ -102,7 +101,6 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
         imgVFoto = findViewById(R.id.imgVFoto);
         edtDescription = findViewById(R.id.edtDescription);
-        btnLocation = findViewById(R.id.btnLocation);
 
         spinner = findViewById(R.id.categories);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -269,12 +267,13 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
     public void pickImage(View v){
 
-        cv = new ContentValues();
+        ContentValues cv = new ContentValues();
         cv.put(MediaStore.Images.Media.TITLE, "My Picture");
         cv.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
         imageUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        Log.e("--->", "ImageURI pickImage: " + imageUri);
         startActivityForResult(intent, PICTURE_RESULT);
 
     }
@@ -320,6 +319,8 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        Log.e("--->", "Activity Result: requestCode: " + requestCode + " ResultCode: " + resultCode);
+
         if(resultCode == Activity.RESULT_OK) {
 
             switch(requestCode) {
@@ -336,69 +337,22 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
                     break;
 
 
-                case PICK_IMAGE_REQUEST:
-
-                    if(data != null && data.getData() != null){
-                        Uri filePath = data.getData();
-
-                        try {
-                            //getting image from gallery
-                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-
-                            //Setting image to ImageView
-
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-                            byte[] imageBytes = baos.toByteArray();
-                            String imageString = Base64.encodeToString(imageBytes, Base64.NO_WRAP);
-
-
-
-                            // This method will be executed once the timer is over
-                            // Start your app main activity
-                            byte[] decodedString = Base64.decode(imageString, Base64.DEFAULT);
-
-                            final Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            new Handler().postDelayed(new Runnable() {
-
-                                /*
-                                 * Showing splash screen with a timer. This will be useful when you
-                                 * want to show case your app logo / company
-                                 */
-
-                                @Override
-                                public void run() {
-                                    // This method will be executed once the timer is over
-                                    // Start your app main activity
-                                    imgVFoto.setImageBitmap(decodedByte);
-
-                                }
-                            },2000);
-                            /* Bitmap bitmaps = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                             */
-                            // close this activity
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-
-                    break;
-
-
 
                 case PICTURE_RESULT:
 
+                    Log.e("--->", "Picture Result");
+
                     try {
 
-                        Bitmap thumbnail = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                        imgVFoto.setImageBitmap(thumbnail);
+                        Log.e("--->", "image uri: " + imageUri);
+                        imgVFoto.setImageURI(imageUri);
 
                         imageOriginalTO = ManagerFile.getImageOriginal(this, imageUri, null);
 
                     } catch (Exception e) {
+                        Log.e("--->", "Catch");
                         e.printStackTrace();
+                        Log.e("--->", "Message: " + e.getMessage());
                     }
 
                     break;

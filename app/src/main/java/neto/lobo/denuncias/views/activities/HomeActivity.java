@@ -14,12 +14,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //import neto.lobo.denuncias.views.fragments.CreateFragment;
 import neto.lobo.denuncias.views.fragments.MapFragment;
@@ -31,6 +33,9 @@ import neto.lobo.denuncias.helper.BottomNavigationViewHelper;
 import youubi.common.to.ContentTO;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private static final int TIME_INTERVAL = 2000;
+    private long mBackPressed;
 
     private FloatingActionButton createContent;
     private Fragment fragmentMap = new MapFragment();
@@ -131,5 +136,20 @@ public class HomeActivity extends AppCompatActivity {
                 fragment.loadContents();
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed();
+            return;
+
+        } else {
+            Toast.makeText(getBaseContext(), "Pressione mais uma vez para sair", Toast.LENGTH_SHORT).show();
+        }
+
+        mBackPressed = System.currentTimeMillis();
+
     }
 }

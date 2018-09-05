@@ -9,23 +9,23 @@
 
     <ImageView
         android:id="@+id/imgVFoto"
-        android:onClick="pickImage"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:background="@color/grey"
         android:contentDescription="@string/photoContent"
+        android:onClick="pickImage"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_photo"
+        android:src="@drawable/ic_camera"
         app:layout_constraintDimensionRatio="16:9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/categories" />
 
 
     <EditText
@@ -50,18 +50,18 @@
 
     <TextView
         android:id="@+id/textlabelCategories"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Categoria:"
+        android:layout_marginTop="16dp"
+        android:text="Selecione a categoria:"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.111"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtDescription" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/categories"
@@ -118,11 +118,13 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Localizar Denuncia"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/shape_btn"
         android:onClick="pickPlace"
+        android:text="Localizar Denuncia"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categories" />
+        app:layout_constraintTop_toBottomOf="@+id/edtDescription" />
 
 </android.support.constraint.ConstraintLayout>
