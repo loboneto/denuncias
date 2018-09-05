@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -90,6 +91,7 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
     private ImageView imgVFoto;
     private EditText edtDescription;
     private Spinner spinner;
+    private ProgressBar progressBar;
 
     private static final int CAMERA_TESTE = 111;
     private static final int PICTURE_RESULT = 222;
@@ -107,6 +109,7 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
         imgVFoto = findViewById(R.id.imgVFoto);
         edtDescription = findViewById(R.id.edtDescription);
+        progressBar = findViewById(R.id.progressBar);
 
         spinner = findViewById(R.id.categories);
         // Create an ArrayAdapter using the string array and a default spinner layout
@@ -283,7 +286,7 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, PICTURE_RESULT);
-
+        progressBar.setVisibility(View.VISIBLE);
     }
 
 
@@ -355,26 +358,60 @@ public class CreateActivity extends AppCompatActivity implements LocationListene
 
                 case PICTURE_RESULT:
 
+                    new Thread() {
+                        public void run() {
+                            Looper.prepare();
+
+                            try {
+
+                                imageOriginalTO = ManagerFile.getImageOriginal(CreateActivity.this, imageUri, null);
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        imgVFoto.setImageURI(imageUri);
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                });
+
+                            } catch (Exception e) {
+                                Log.e("--->", "Catch");
+                                e.printStackTrace();
+                                Log.e("--->", "Message: " + e.getMessage());
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setVisibility(View.GONE);
+                                    }
+                                });
+
+                            }
+
+                        }
+                    }.start();
+
                     Log.e("--->", "Picture Result");
 
-                    try {
-
-                        Log.e("--->", "image uri: " + imageUri);
-                        imgVFoto.setImageURI(imageUri);
-
-                        imageOriginalTO = ManagerFile.getImageOriginal(this, imageUri, null);
-
-                    } catch (Exception e) {
-                        Log.e("--->", "Catch");
-                        e.printStackTrace();
-                        Log.e("--->", "Message: " + e.getMessage());
-                    }
+//                    try {
+//
+//                        Log.e("--->", "image uri: " + imageUri);
+//                        imgVFoto.setImageURI(imageUri);
+//                        imageOriginalTO = ManagerFile.getImageOriginal(this, imageUri, null);
+//
+//                    } catch (Exception e) {
+//                        Log.e("--->", "Catch");
+//                        e.printStackTrace();
+//                        Log.e("--->", "Message: " + e.getMessage());
+//                    }
 
                     break;
 
 
 
             }
+        } else {
+            progressBar.setVisibility(View.GONE);
         }
     }
 

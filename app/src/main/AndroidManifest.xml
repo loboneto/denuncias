@@ -33,24 +33,40 @@
 
 
 
-        <activity android:name=".views.activities.LoginActivity" >
+        <activity android:name=".views.activities.LoginActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".views.activities.RegisterActivity" />
-        <activity android:name=".views.activities.EditProfileActivity" />
+        <activity android:name=".views.activities.RegisterActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".views.activities.EditProfileActivity"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name=".views.activities.HomeActivity"
-            android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".views.activities.CreateActivity" />
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".views.activities.CreateActivity"
+            android:screenOrientation="portrait" />
+
         <activity android:name=".views.activities.DenunciaActivity"
-            android:windowSoftInputMode="stateHidden"/>
-        <activity android:name=".views.activities.ProfileActivity" />
-        <activity android:name=".views.activities.ListAvatarActivity"/>
-        <activity android:name=".views.activities.MapActivity"/>
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".views.activities.ProfileActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".views.activities.ListAvatarActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".views.activities.MapActivity"
+            android:screenOrientation="portrait" />
 
     </application>
 
