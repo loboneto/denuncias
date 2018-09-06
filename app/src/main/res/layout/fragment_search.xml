@@ -45,20 +45,24 @@
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_marginBottom="8dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@+id/recyclerViewSearch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search">
 
         <LinearLayout
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <Button
                 android:id="@+id/button"
-                style="@style/Widget.AppCompat.Button.Small"
+                style="@style/SearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -66,6 +70,7 @@
 
             <Button
                 android:id="@+id/button1"
+                style="@style/SearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -73,6 +78,7 @@
 
             <Button
                 android:id="@+id/button2"
+                style="@style/SearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -80,6 +86,7 @@
 
             <Button
                 android:id="@+id/button3"
+                style="@style/SearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -87,18 +94,20 @@
 
             <Button
                 android:id="@+id/button4"
+                style="@style/SearchButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/transporte_publico" />
 
         </LinearLayout>
+
     </HorizontalScrollView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewSearch"
         android:layout_width="match_parent"
-        android:layout_height="444dp"
+        android:layout_height="0dp"
         android:layout_below="@+id/search"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
