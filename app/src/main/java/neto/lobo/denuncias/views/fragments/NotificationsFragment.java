@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,14 +51,18 @@ public class NotificationsFragment extends Fragment {
         if(result.getCode() == ConstResult.CODE_OK){
             notifs = result.getListObjectCast();
 
+            Log.d("----->", notifs.toString());
+
             //filtrar aqui
             for(int i = 0; i<notifs.size(); i++){
                 if(notifs.get(i).getType() != ConstNotify.NOTIFY_TYPE_EXP_CONTENT_COMMENTED ||
-                        notifs.get(i).getType() != ConstNotify.NOTIFY_TYPE_EXP_CONTENT_RATED)
+                        notifs.get(i).getType() != ConstNotify.NOTIFY_TYPE_EXP_CONTENT_RATED){
                     notifs.remove(i);
                 }
+            }
 
             String[] strings = new String[notifs.size()];
+
            for(int i = 0; i<notifs.size(); i++){
                if(notifs.get(i).getType() == ConstNotify.NOTIFY_TYPE_EXP_CONTENT_COMMENTED)
                     strings[i] = notifs.get(i).getElementPersonName() + " comentou sua publicação " + notifs.get(i).getElementName();
@@ -67,7 +72,7 @@ public class NotificationsFragment extends Fragment {
 
 
 
-            adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, strings);
+            adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, strings);
 
             list = view.findViewById(R.id.list_notifications);
             list.setAdapter(adapter);
