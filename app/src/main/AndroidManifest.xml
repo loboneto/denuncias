@@ -22,52 +22,51 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD6ccK5wJn4aIsQLpAfu1tkrwJZ8ffObdU" />
 
-        <!--<activity-->
-            <!--android:name=".views.activities.SplashActivity"-->
-            <!--android:label="@string/app_name">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
+        <!-- <activity -->
+        <!-- android:name=".views.activities.SplashActivity" -->
+        <!-- android:label="@string/app_name"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
 
-
-
-        <activity android:name=".views.activities.LoginActivity"
-            android:screenOrientation="portrait" >
+        <activity
+            android:name=".views.activities.LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".views.activities.RegisterActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".views.activities.EditProfileActivity"
-            android:screenOrientation="portrait"/>
-
+        <activity
+            android:name=".views.activities.RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".views.activities.EditProfileActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".views.activities.HomeActivity"
-            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".views.activities.CreateActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".views.activities.CreateActivity"
+        <activity
+            android:name=".views.activities.DenunciaActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".views.activities.ProfileActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".views.activities.DenunciaActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"/>
-
-        <activity android:name=".views.activities.ProfileActivity"
+        <activity
+            android:name=".views.activities.ListAvatarActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".views.activities.ListAvatarActivity"
+        <activity
+            android:name=".views.activities.MapActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".views.activities.MapActivity"
-            android:screenOrientation="portrait" />
-
+        <activity android:name=".views.activities.SearchActivity"></activity>
     </application>
 
 </manifest>
