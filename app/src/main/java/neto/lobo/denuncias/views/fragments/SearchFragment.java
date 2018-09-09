@@ -2,11 +2,13 @@ package neto.lobo.denuncias.views.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.supercharge.shimmerlayout.ShimmerLayout;
@@ -33,7 +36,7 @@ public class SearchFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private DenunciaAdpter denunciaAdpter;
-    private List<ContentTO> contents;
+    private List<ContentTO> contents = new ArrayList<>();
     private ManagerRest managerRest;
     private ResultTO result;
     private ManagerPreferences preferences;
@@ -56,9 +59,11 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    if(!editText.getText().toString().equals("")){
+
+                    String text = editText.getText().toString().trim();
+                    if(!text.isEmpty()){
                         Intent searchIntent = new Intent(getActivity(), SearchActivity.class);
-                        searchIntent.putExtra("textSearch", editText.getText());
+                        searchIntent.putExtra("textSearch", text);
                         startActivity(searchIntent);
                     }else{
                         Toast.makeText(getContext(),"Campo vazio", Toast.LENGTH_LONG).show();
@@ -73,25 +78,68 @@ public class SearchFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
         recyclerView.setLayoutManager(linearLayoutManager);
+        denunciaAdpter = new DenunciaAdpter(contents, getActivity());
+        recyclerView.setAdapter(denunciaAdpter);
 
         managerRest = new ManagerRest(getContext());
         preferences = new ManagerPreferences(getContext());
 
-        //MELHORAR ESSE NEGOCIO AQUI
-        /*result = managerRest.getListContentRanking(ConstModel.SORT_XP_DAY, 50,1);
+
+        new Thread(){
+            @Override
+            public void run () {
+                Looper.prepare();
+
+                result = managerRest.getListContentRanking(ConstModel.SORT_XP_DAY, 50,1);
 
 
-        if(result.getCode() == ConstResult.CODE_OK){
+                if(result.getCode() == ConstResult.CODE_OK){
 
-            contents = result.getListObjectCast();
+                    final List<ContentTO> destaques = result.getListObjectCast();
 
-            denunciaAdpter = new DenunciaAdpter(contents, getActivity());
+                    if(destaques != null)
+                        contents.addAll(destaques);
 
-            recyclerView.setAdapter(denunciaAdpter);
 
-        }*/
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if(destaques == null || destaques.size() == 0)
+                                Toast.makeText(getContext(),"Nenhum destaque foi encontrado.", Toast.LENGTH_LONG).show();
+
+                            denunciaAdpter.notifyDataSetChanged();
+
+                            shimmerLayout.stopShimmerAnimation();
+                            shimmerLayout.setVisibility(View.GONE);
+                        }
+                    });
+
+
+
+                } else {
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            shimmerLayout.stopShimmerAnimation();
+                            shimmerLayout.setVisibility(View.GONE);
+
+                            Toast.makeText(getContext(),"Erro ao carregar destaques.", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+
+
+                }
+
+            }
+        }.start();
+
 
         return view;
     }
+
 
 }
